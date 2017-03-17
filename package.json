@@ -4,7 +4,7 @@
   "description": "A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron",
   "main": "index.js",
   "scripts": {
-    "test": "electron-mocha tests/node-resin-raven tests/resin-raven tests/utils && electron-mocha --renderer tests/browser-resin-raven",
+    "test": "electron-mocha --recursive tests/main && electron-mocha --recursive --renderer tests/renderer",
     "lint": "eslint ."
   },
   "repository": {
