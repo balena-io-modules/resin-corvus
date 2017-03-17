@@ -85,7 +85,7 @@ exports.uninstall = () => {
  * @function
  * @public
  *
- * @param context
+ * @param {Object} context
  */
 exports.setContext = (context) => {
   if (!exports.isInstalled()) {
@@ -95,6 +95,11 @@ exports.setContext = (context) => {
   properties.context = utils.prepareObjectForMixpanel(context);
 };
 
+/**
+ * @summary Track message in Mixpanel
+ * @param {String} message
+ * @param {Object} context
+ */
 exports.captureMessage = (message, context) => {
   if (!properties.installed()) {
     throw new Error('Mixpanel not installed');
@@ -102,3 +107,5 @@ exports.captureMessage = (message, context) => {
 
   properties.client.track(message, Object.assign({}, properties.context, context));
 };
+
+// TODO: captureException

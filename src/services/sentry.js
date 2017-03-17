@@ -94,7 +94,7 @@ exports.uninstall = () => {
  * @function
  * @public
  *
- * @param context
+ * @param {Object} context
  */
 exports.setContext = (context) => {
   if (!properties.installed) {
@@ -118,5 +118,16 @@ exports.captureMessage = (message, context) => {
   properties.client.context(() => {
     exports.setContext(context);
     properties.client.captureMessage(message);
+  });
+};
+
+exports.captureException = (exception, context) => {
+  if (!properties.installed) {
+    throw new Error('Sentry not installed');
+  }
+
+  properties.client.context(() => {
+    exports.setContext(context);
+    properties.client.captureException(exception, context);
   });
 };

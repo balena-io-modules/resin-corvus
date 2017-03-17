@@ -104,7 +104,7 @@ exports.setContext = (context) => {
 };
 
 /**
- * @summary Capture message to all installed services
+ * @summary Send message to all installed services
  * @function
  * @public
  *
@@ -112,8 +112,8 @@ exports.setContext = (context) => {
  * The context passed to this function is not saved as it is the one passed to `setContext`.
  * It is an additional one-time context.
  *
- * @param message
- * @param context
+ * @param {String} message
+ * @param {Object} context
  *
  * @example
  * resinRaven.captureMessage('Informational message', { user: 'john' });
@@ -121,5 +121,26 @@ exports.setContext = (context) => {
 exports.captureMessage = (message, context) => {
   installedServices.forEach((service) => {
     service.captureMessage(message, context);
+  });
+};
+
+/**
+ * @summary Send exception to all installed services
+ * @function
+ * @public
+ *
+ * @description
+ * The context passed to this function is not saved as it is the one passed to `setContext`.
+ * It is an additional one-time context.
+ *
+ * @param {Error} exception
+ * @param {Object} context
+ *
+ * @example
+ * resinRaven.captureException(new Error('Something bad'), { user: 'john' });
+ */
+exports.captureMessage = (exception, context) => {
+  installedServices.forEach((service) => {
+    service.captureException(exception, context);
   });
 };
