@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const utils = require('./utils');
+const isBrowserLike = require('./is-browser-like');
 
 /**
  * @summary Sentry library used; exported for testing purposes
  * @public
  */
-exports.SentryLib = utils.browserLike() ? require('raven-js/dist/raven') : require('raven');
+exports.SentryLib = isBrowserLike() ? require('raven-js/dist/raven') : require('raven');
 
 const properties = {
   installed: false

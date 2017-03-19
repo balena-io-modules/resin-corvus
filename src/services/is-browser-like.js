@@ -19,4 +19,4 @@ const detect = require('detect-process');
 const env = detect.getName();
 const browserLike = env === 'browser' || env === 'phantom' || (env === 'electron' && process.type === 'renderer');
 
-exports.browserLike = () => browserLike;
+module.exports = () => browserLike;

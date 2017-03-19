@@ -15,14 +15,14 @@
  */
 
 const _ = require('lodash');
-const utils = require('./utils');
+const isBrowserLike = require('./is-browser-like');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
 
 /**
  * @summary Mixpanel library used; exported for testing purposes
  * @public
  */
-exports.MixpanelLib = utils.browserLike() ? require('mixpanel-browser') : require('mixpanel');
+exports.MixpanelLib = isBrowserLike() ? require('mixpanel-browser') : require('mixpanel');
 
 const properties = {};
 
