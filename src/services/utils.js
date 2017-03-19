@@ -14,77 +14,9 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
-
 const detect = require('detect-process');
 
 const env = detect.getName();
 const browserLike = env === 'browser' || env === 'phantom' || (env === 'electron' && process.type === 'renderer');
-const flatten = require('flat').flatten;
-const deepMapKeys = require('deep-map-keys');
 
 exports.browserLike = () => browserLike;
-
-/**
- * @summary Prepare object for Mixpanel
- * @function
- * @private
- *
- * @description
- * Flatten object and transform property names to start case.
- * Enviroment variable like property names are not transformed to start case.
- *
- * @param {*} object to transform
- * @return {*} transformed object
- *
- * @example
- * const object = utils.prepareObjectForMixpanel({
- *   object: {
- *     propertyName: 'value',
- *     ENVIRONMENT_VARIABLE: true
- *   }
- * });
- *
- * console.log(object);
- * > {
- * >   'Object Property Name': 'value',
- * >   'Object ENVIRONMENT_VARIABLE': true
- * > }
- */
-exports.prepareObjectForMixpanel = (object) => {
-  if (_.isUndefined(object)) {
-    return undefined;
-  }
-
-  // Transform primitives to objects
-  if (!_.isObject(object)) {
-    return {
-      Value: object,
-    };
-  }
-
-  if (_.isArray(object)) {
-    return _.map(object, (property) => {
-      if (_.isObject(property)) {
-        return exports.prepareObjectForMixpanel(property);
-      }
-
-      return property;
-    });
-  }
-
-  const transformedKeysObject = deepMapKeys(object, (key) => {
-    // Preserve environment variables
-    const regex = /^[A-Z_]+$/;
-    if (regex.test(key)) {
-      return key;
-    }
-
-    return _.startCase(key);
-  });
-
-  return flatten(transformedKeysObject, {
-    delimiter: ' ',
-    safe: true,
-  });
-};

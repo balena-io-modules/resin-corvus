@@ -16,6 +16,7 @@
 
 const _ = require('lodash');
 const utils = require('./utils');
+const prepareForMixpanel = require('./prepare-for-mixpanel');
 
 /**
  * @summary Mixpanel library used; exported for testing purposes
@@ -92,7 +93,7 @@ exports.setContext = (context) => {
     throw new Error('Mixpanel not installed');
   }
 
-  properties.context = utils.prepareObjectForMixpanel(context);
+  properties.context = prepareForMixpanel(context);
 };
 
 /**
