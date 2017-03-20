@@ -2,9 +2,12 @@
   "name": "resin-raven",
   "version": "1.0.0-alpha.1",
   "description": "A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron",
-  "main": "index.js",
+
+  "main": "node.js",
+  "browser": "browser.js",
+
   "scripts": {
-    "test": "electron-mocha --recursive tests/main && electron-mocha --recursive --renderer tests/renderer",
+    "test": "electron-mocha --recursive tests",
     "lint": "eslint ."
   },
   "repository": {

@@ -15,98 +15,97 @@
  */
 
 const _ = require('lodash');
-const isBrowserLike = require('./is-browser-like');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
 
-/**
- * @summary Mixpanel library used; exported for testing purposes
- * @public
- */
-exports.MixpanelLib = isBrowserLike() ? require('mixpanel-browser') : require('mixpanel');
+module.exports = (MixpanelLib) => {
+  const properties = {};
+  const isInstalled = () => !_.isUndefined(properties.client);
 
-const properties = {};
+  return {
+    /**
+     * @summary Is Mixpanel installed?
+     * @function
+     * @public
+     *
+     * @returns {Boolean} Whether Mixpanel is installed
+     *
+     * @example
+     * if (mixpanel.isInstalled()) {
+     *   console.log('Mixpanel is installed');
+     * }
+     */
+    isInstalled,
 
-/**
- * @summary Is Mixpanel installed?
- * @function
- * @public
- *
- * @returns {Boolean} Whether Mixpanel is installed
- *
- * @example
- * if (mixpanel.isInstalled()) {
- *   console.log('Mixpanel is installed');
- * }
- */
-exports.isInstalled = () => !_.isUndefined(properties.client);
+    /**
+    * @summary Install Mixpanel client
+    * @function
+    * @public
+    *
+    * @param {Object} token
+    * @param {Object} options
+    *
+    * @example
+    * mixpanel.install({
+    *   token: 'YOUR_TOKEN',
+    *   options: {
+    *     protocol: 'https'
+    *   }
+    * });
+    */
+    install: (config) => {
+      if (isInstalled()) {
+        throw new Error('Mixpanel already installed');
+      }
 
-/**
- * @summary Install Mixpanel client
- * @function
- * @public
- *
- * @param {Object} token
- * @param {Object} options
- *
- * @example
- * mixpanel.install({
- *   token: 'YOUR_TOKEN',
- *   options: {
- *     protocol: 'https'
- *   }
- * });
- */
-exports.install = (config) => {
-  if (exports.isInstalled()) {
-    throw new Error('Mixpanel already installed');
-  }
+      properties.client = MixpanelLib.init(config.token, config.options);
+    },
 
-  properties.client = exports.MixpanelLib.init(config.token, config.options);
+    /**
+     * @summary Uninstall Sentry client
+     * @function
+     * @public
+     *
+     * @example
+     * sentry.uninstall()
+     */
+    uninstall: () => {
+      if (!isInstalled()) {
+        throw new Error('Mixpanel not installed');
+      }
+
+      properties.client = undefined;
+      properties.context = {};
+    },
+
+    /**
+     * @summary Set context to send to Mixpanel
+     * @function
+     * @public
+     *
+     * @param {Object} context
+     */
+    setContext: (context) => {
+      if (!isInstalled()) {
+        throw new Error('Mixpanel not installed');
+      }
+
+      properties.context = prepareForMixpanel(context);
+    },
+
+    /**
+     * @summary Track message in Mixpanel
+     * @param {String} message
+     * @param {Object} context
+     */
+    captureMessage: (message, context) => {
+      if (!isInstalled()) {
+        throw new Error('Mixpanel not installed');
+      }
+
+      properties.client.track(message, Object.assign({}, properties.context, context));
+    }
+
+  // TODO: captureException
+
+  };
 };
-
-/**
- * @summary Uninstall Sentry client
- * @function
- * @public
- *
- * @example
- * sentry.uninstall()
- */
-exports.uninstall = () => {
-  if (!exports.isInstalled()) {
-    throw new Error('Mixpanel not installed');
-  }
-
-  properties.client = undefined;
-  properties.context = {};
-};
-
-/**
- * @summary Set context to send to Mixpanel
- * @function
- * @public
- *
- * @param {Object} context
- */
-exports.setContext = (context) => {
-  if (!exports.isInstalled()) {
-    throw new Error('Mixpanel not installed');
-  }
-
-  properties.context = prepareForMixpanel(context);
-};
-
-/**
- * @summary Track message in Mixpanel
- * @param {String} message
- * @param {Object} context
- */
-exports.captureMessage = (message, context) => {
-  if (!properties.installed()) {
-    throw new Error('Mixpanel not installed');
-  }
-
-  properties.client.track(message, Object.assign({}, properties.context, context));
-};
-
-// TODO: captureException

@@ -14,120 +14,119 @@
  * limitations under the License.
  */
 
-const isBrowserLike = require('./is-browser-like');
+const isBrowserLike = require('../is-browser-like');
 
-/**
- * @summary Sentry library used; exported for testing purposes
- * @public
- */
-exports.SentryLib = isBrowserLike() ? require('raven-js/dist/raven') : require('raven');
+module.exports = (SentryLib) => {
+  const properties = {
+    installed: false
+  };
 
-const properties = {
-  installed: false
-};
+  return {
 
-/**
- * @summary Is Mixpanel installed?
- * @function
- * @public
- *
- * @returns {Boolean} Whether Sentry is installed
- *
- * @example
- * if (sentry.isInstalled()) {
- *   console.log('Sentry is installed');
- * }
- */
-exports.isInstalled = () => properties.installed;
+    /**
+     * @summary Is Sentry installed?
+     * @function
+     * @public
+     *
+     * @returns {Boolean} Whether Sentry is installed
+     *
+     * @example
+     * if (sentry.isInstalled()) {
+     *   console.log('Sentry is installed');
+     * }
+     */
+    isInstalled: () => properties.installed,
 
-/**
- * @summary Install Sentry client
- * @function
- * @public
- *
- * At a minimum, the options parameter must contain the release.
- * For information about the DSN, see https://docs.sentry.io/quickstart/#configure-the-dsn
- *
- * @param {Object} dsn - Sentry Data Source Name
- * @param {Object} options
- *
- * @example
- * sentry.install({
- *   dsn: 'https://<key>:<secret>@client.io/<project>',
- *   options: {
- *     release: '1.0.0'
- *   }
- * });
- */
-exports.install = (config) => {
-  if (properties.installed) {
-    throw new Error('Sentry already installed');
-  }
+    /**
+     * @summary Install Sentry client
+     * @function
+     * @public
+     *
+     * At a minimum, the options parameter must contain the release.
+     * For information about the DSN, see https://docs.sentry.io/quickstart/#configure-the-dsn
+     *
+     * @param {Object} dsn - Sentry Data Source Name
+     * @param {Object} options
+     *
+     * @example
+     * sentry.install({
+     *   dsn: 'https://<key>:<secret>@client.io/<project>',
+     *   options: {
+     *     release: '1.0.0'
+     *   }
+     * });
+     */
+    install: (config) => {
+      if (properties.installed) {
+        throw new Error('Sentry already installed');
+      }
 
-  if (!config.options || !config.options.release) {
-    throw new Error('provide a release');
-  }
+      if (!config.options || !config.options.release) {
+        throw new Error('provide a release');
+      }
 
-  properties.client = exports.SentryLib.config(config.dsn, config.options).install();
-  properties.installed = true;
-};
+      properties.client = SentryLib.config(config.dsn, config.options).install();
+      properties.installed = true;
+    },
 
-/**
- * @summary Uninstall Sentry client
- * @function
- * @public
- *
- * @example
- * sentry.uninstall()
- */
-exports.uninstall = () => {
-  if (!properties.installed) {
-    throw new Error('Sentry not installed');
-  }
+    /**
+     * @summary Uninstall Sentry client
+     * @function
+     * @public
+     *
+     * @example
+     * sentry.uninstall()
+     */
+    uninstall: () => {
+      if (!properties.installed) {
+        throw new Error('Sentry not installed');
+      }
 
-  properties.client.uninstall();
-  properties.installed = false;
-};
+      properties.client.uninstall();
+      properties.installed = false;
+    },
 
-/**
- * @summary Set context to send to Sentry
- * @function
- * @public
- *
- * @param {Object} context
- */
-exports.setContext = (context) => {
-  if (!properties.installed) {
-    throw new Error('Sentry not installed');
-  }
+    /**
+     * @summary Set context to send to Sentry
+     * @function
+     * @public
+     *
+     * @param {Object} context
+     */
+    setContext: (context) => {
+      if (!properties.installed) {
+        throw new Error('Sentry not installed');
+      }
 
-  if (utils.browserLike()) {
-    this.raven.setUserContext(context.user);
-    this.raven.setExtraContext(context.extra);
-    this.raven.setTagsContext(context.tags);
-  } else {
-    this.raven.setContext(context);
-  }
-};
+      if (isBrowserLike()) {
+        this.raven.setUserContext(context.user);
+        this.raven.setExtraContext(context.extra);
+        this.raven.setTagsContext(context.tags);
+      } else {
+        this.raven.setContext(context);
+      }
+    },
 
-exports.captureMessage = (message, context) => {
-  if (!properties.installed) {
-    throw new Error('Sentry not installed');
-  }
+    captureMessage: (message, context) => {
+      if (!properties.installed) {
+        throw new Error('Sentry not installed');
+      }
 
-  properties.client.context(() => {
-    exports.setContext(context);
-    properties.client.captureMessage(message);
-  });
-};
+      properties.client.context(() => {
+        exports.setContext(context);
+        properties.client.captureMessage(message);
+      });
+    },
 
-exports.captureException = (exception, context) => {
-  if (!properties.installed) {
-    throw new Error('Sentry not installed');
-  }
+    captureException: (exception, context) => {
+      if (!properties.installed) {
+        throw new Error('Sentry not installed');
+      }
 
-  properties.client.context(() => {
-    exports.setContext(context);
-    properties.client.captureException(exception, context);
-  });
+      properties.client.context(() => {
+        exports.setContext(context);
+        properties.client.captureException(exception, context);
+      });
+    }
+  };
 };

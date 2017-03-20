@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-const chai = require('chai');
-const sentry = require('../../src/services/sentry');
+const SentryLib = require('raven');
+const MixpanelLib = require('mixpanel');
 
-describe('Services: Sentry', () => {
-  it('uses the correct library in the Electron renderer thread', () => {
-    /* eslint-disable global-require */
-    chai.expect(sentry.SentryLib).to.equal(require('raven-js/dist/raven'));
-    /* eslint-enable global-require */
-  });
-});
-
+module.exports = require('./src/resin-raven')(SentryLib, MixpanelLib);
