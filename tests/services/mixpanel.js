@@ -16,9 +16,12 @@
 
 const chai = require('chai');
 const sinon = require('sinon');
-const mixpanel = require('../../../src/services/mixpanel');
+const MixpanelLib = require('mixpanel');
+const Mixpanel = require('../../src/services/mixpanel');
 
 describe('Services: Mixpanel', () => {
+  const mixpanel = Mixpanel(MixpanelLib);
+
   const config = {
     token: 'YOUR_TOKEN',
     options: {
@@ -27,20 +30,14 @@ describe('Services: Mixpanel', () => {
   };
 
   beforeEach(() => {
-    sinon.spy(mixpanel.MixpanelLib, 'init');
+    sinon.spy(MixpanelLib, 'init');
   });
 
   afterEach(() => {
     if (mixpanel.isInstalled()) {
       mixpanel.uninstall();
     }
-    mixpanel.MixpanelLib.init.restore();
-  });
-
-  it('uses the correct library in the Electron main thread', () => {
-    /* eslint-disable global-require */
-    chai.expect(mixpanel.MixpanelLib).to.equal(require('mixpanel'));
-    /* eslint-enable global-require */
+    MixpanelLib.init.restore();
   });
 
   describe('install()', () => {
@@ -51,8 +48,8 @@ describe('Services: Mixpanel', () => {
 
     it('calls MixpanelLib.init() with correct parameters', () => {
       mixpanel.install(config);
-      chai.expect(mixpanel.MixpanelLib.init.calledOnce).to.be.true;
-      chai.expect(mixpanel.MixpanelLib.init.calledWith(config.token, config.options)).to.be.true;
+      chai.expect(MixpanelLib.init.calledOnce).to.be.true;
+      chai.expect(MixpanelLib.init.calledWith(config.token, config.options)).to.be.true;
     });
   });
 

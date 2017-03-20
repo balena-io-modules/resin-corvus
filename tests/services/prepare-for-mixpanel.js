@@ -31,7 +31,7 @@
  */
 
 const chai = require('chai');
-const prepareObjectForMixpanel = require('../../../src/services/prepare-for-mixpanel');
+const prepareObjectForMixpanel = require('../../src/services/prepare-for-mixpanel');
 
 describe('prepareForMixpanel()', () => {
   it('should return undefined if given undefined', () => {

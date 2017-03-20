@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-const chai = require('chai');
-const mixpanel = require('../../src/services/mixpanel');
+const ResinLib = require('raven-js/dist/raven');
+const MixpanelLib = require('mixpanel-browser');
 
-describe('Services: Mixpanel', () => {
-  it('uses the correct library in the Electron renderer thread', () => {
-    /* eslint-disable global-require */
-    chai.expect(mixpanel.MixpanelLib).to.equal(require('mixpanel-browser'));
-    /* eslint-enable global-require */
-  });
-});
-
+module.exports = require('./src/resin-raven')(ResinLib, MixpanelLib);

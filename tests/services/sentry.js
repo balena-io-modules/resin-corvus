@@ -16,9 +16,12 @@
 
 const chai = require('chai');
 const sinon = require('sinon');
-const sentry = require('../../../src/services/sentry');
+const SentryLib = require('raven');
+const Sentry = require('../../src/services/sentry');
 
 describe('Services: Sentry', () => {
+  const sentry = Sentry(SentryLib);
+
   const config = {
     dsn: 'https://xxx:yyy@client.io/100000',
     options: {
@@ -27,24 +30,18 @@ describe('Services: Sentry', () => {
   };
 
   beforeEach(() => {
-    sinon.spy(sentry.SentryLib, 'config');
-    sinon.spy(sentry.SentryLib, 'install');
-    sinon.spy(sentry.SentryLib, 'uninstall');
+    sinon.spy(SentryLib, 'config');
+    sinon.spy(SentryLib, 'install');
+    sinon.spy(SentryLib, 'uninstall');
   });
 
   afterEach(() => {
     if (sentry.isInstalled()) {
       sentry.uninstall();
     }
-    sentry.SentryLib.config.restore();
-    sentry.SentryLib.install.restore();
-    sentry.SentryLib.uninstall.restore();
-  });
-
-  it('uses the correct library in the Electron main thread', () => {
-    /* eslint-disable global-require */
-    chai.expect(sentry.SentryLib).to.equal(require('raven'));
-    /* eslint-enable global-require */
+    SentryLib.config.restore();
+    SentryLib.install.restore();
+    SentryLib.uninstall.restore();
   });
 
   describe('install()', () => {
@@ -59,13 +56,13 @@ describe('Services: Sentry', () => {
 
     it('calls SentryLib.config() with correct parameters', () => {
       sentry.install(config);
-      chai.expect(sentry.SentryLib.config.calledOnce).to.be.true;
-      chai.expect(sentry.SentryLib.config.calledWith(config.dsn, config.options)).to.be.true;
+      chai.expect(SentryLib.config.calledOnce).to.be.true;
+      chai.expect(SentryLib.config.calledWith(config.dsn, config.options)).to.be.true;
     });
 
     it('calls SentryLib.install() after SentryLib.config()', () => {
       sentry.install(config);
-      chai.expect(sentry.SentryLib.install.calledAfter(sentry.SentryLib.config));
+      chai.expect(SentryLib.install.calledAfter(SentryLib.config));
     });
   });
 
@@ -94,7 +91,7 @@ describe('Services: Sentry', () => {
     it('calls SentryLib.uninstall()', () => {
       sentry.install(config);
       sentry.uninstall();
-      chai.expect(sentry.SentryLib.uninstall.calledOnce).to.be.true;
+      chai.expect(SentryLib.uninstall.calledOnce).to.be.true;
     });
   });
 });
