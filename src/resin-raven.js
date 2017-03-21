@@ -24,6 +24,8 @@ module.exports = (SentryLib, MixpanelLib) => {
   const services = { sentry, mixpanel };
   const installedServices = [];
 
+  const getSupportedServices = () => ['sentry', 'mixpanel'];
+
   return {
 
     /**
@@ -34,39 +36,43 @@ module.exports = (SentryLib, MixpanelLib) => {
      * @returns Array of supported services
      *
      * @example
-     * services.supportedServices().map((service) => console.log(service));
+     * services.getSupportedServices().map((service) => console.log(service));
      */
-    supportedServices: () => ['sentry', 'mixpanel'],
+    getSupportedServices,
 
     /**
-     * summary Install service
+     * @summary Install service
      *
-     * @param service
+     * @param {Object} config
      *
      * @example
      * services.install({
-     *   sentry: {
-     *     dsn: 'https://<key>:<secret>@client.io/<project>',
-     *     options: {
-     *       release: '1.0.0'
-     *     }
+     *   services: {
+     *     sentry: 'https://<key>:<secret>@client.io/<project>',
+     *     mixpanel: 'YOUR_TOKEN'
+     *   },
+     *   options: {
+     *     release: '1.0.0',
+     *     serverName: 'staging'
      *   }
-     * })
+     * });
      */
-    install: (service) => {
-      if (!exports.supportedServices.includes(service.name)) {
-        throw new Error('Service not supported');
-      }
+    install: (config) => {
+      Object.keys(config.services).forEach((serviceName) => {
+        if (!getSupportedServices().includes(serviceName)) {
+          throw new Error(`Service not supported: ${serviceName}`);
+        }
 
-      if (service.name === 'sentry') {
-        sentry.install(service.config);
-      }
+        if (serviceName === 'sentry') {
+          sentry.install(config.services.sentry, config.options.release, config.options.serverName);
+        }
 
-      if (service.name === 'mixpanel') {
-        mixpanel.install(service.config);
-      }
+        if (serviceName === 'mixpanel') {
+          mixpanel.install({ token: config.services.mixpanel });
+        }
 
-      installedServices.push(service.name);
+        installedServices.push(serviceName);
+      });
     },
 
     /**
@@ -80,7 +86,7 @@ module.exports = (SentryLib, MixpanelLib) => {
      * services.uninstall('sentry');
      */
     uninstall: (serviceName) => {
-      if (!exports.supportedServices().includes(serviceName)) {
+      if (!exports.getSupportedServices().includes(serviceName)) {
         throw new Error(`Unknown service: ${serviceName}`);
       }
 

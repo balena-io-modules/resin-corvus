@@ -22,12 +22,8 @@ const Sentry = require('../src/sentry');
 describe('Services: Sentry', () => {
   const sentry = Sentry(SentryLib);
 
-  const config = {
-    dsn: 'https://xxx:yyy@client.io/100000',
-    options: {
-      release: '1.0.0'
-    }
-  };
+  const dsn = 'https://xxx:yyy@client.io/100000';
+  const release = '1.0.0';
 
   beforeEach(() => {
     sinon.spy(SentryLib, 'config');
@@ -46,22 +42,28 @@ describe('Services: Sentry', () => {
 
   describe('install()', () => {
     it('throws if release is missing', () => {
-      chai.expect(() => sentry.install({ dsn: config.dsn })).to.throw(Error);
+      chai.expect(() => sentry.install(dsn)).to.throw(Error);
     });
 
     it('throws if Sentry is already installed', () => {
-      sentry.install(config);
-      chai.expect(() => sentry.install(config)).to.throw(Error);
+      sentry.install(dsn, release);
+      chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error);
     });
 
-    it('calls SentryLib.config() with correct parameters', () => {
-      sentry.install(config);
+    it('calls SentryLib.config() with correct parameters when serverName is not given', () => {
+      sentry.install(dsn, release);
       chai.expect(SentryLib.config.calledOnce).to.be.true;
-      chai.expect(SentryLib.config.calledWith(config.dsn, config.options)).to.be.true;
+      chai.expect(SentryLib.config.calledWith(dsn, { release, serverName: 'production' })).to.be.true;
+    });
+
+    it('calls SentryLib.config() with correct parameters when serverName is given', () => {
+      sentry.install(dsn, release, 'staging');
+      chai.expect(SentryLib.config.calledOnce).to.be.true;
+      chai.expect(SentryLib.config.calledWith(dsn, { release, serverName: 'staging' })).to.be.true;
     });
 
     it('calls SentryLib.install() after SentryLib.config()', () => {
-      sentry.install(config);
+      sentry.install(dsn, release);
       chai.expect(SentryLib.install.calledAfter(SentryLib.config));
     });
   });
@@ -72,12 +74,12 @@ describe('Services: Sentry', () => {
     });
 
     it('is true when sentry is installed', () => {
-      sentry.install(config);
+      sentry.install(dsn, release);
       chai.expect(sentry.isInstalled()).to.be.true;
     });
 
     it('is false after uninstall', () => {
-      sentry.install(config);
+      sentry.install(dsn, release);
       sentry.uninstall();
       chai.expect(sentry.isInstalled()).to.be.false;
     });
@@ -89,7 +91,7 @@ describe('Services: Sentry', () => {
     });
 
     it('calls SentryLib.uninstall()', () => {
-      sentry.install(config);
+      sentry.install(dsn, release);
       sentry.uninstall();
       chai.expect(SentryLib.uninstall.calledOnce).to.be.true;
     });

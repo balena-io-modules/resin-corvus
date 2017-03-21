@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const _ = require('lodash');
 const isBrowserLike = require('./is-browser-like');
 
 module.exports = (SentryLib) => {
@@ -45,27 +46,26 @@ module.exports = (SentryLib) => {
      * At a minimum, the options parameter must contain the release.
      * For information about the DSN, see https://docs.sentry.io/quickstart/#configure-the-dsn
      *
-     * @param {Object} dsn - Sentry Data Source Name
-     * @param {Object} options
+     * @param {String} dsn - Sentry Data Source Name
+     * @param {String} release
+     * @param {String} [serverName]
      *
      * @example
      * sentry.install({
      *   dsn: 'https://<key>:<secret>@client.io/<project>',
-     *   options: {
-     *     release: '1.0.0'
-     *   }
+     *   release: '1.0.0'
      * });
      */
-    install: (config) => {
+    install: (dsn, release, serverName = 'production') => {
       if (properties.installed) {
         throw new Error('Sentry already installed');
       }
 
-      if (!config.options || !config.options.release) {
-        throw new Error('provide a release');
+      if (_.isUndefined(release)) {
+        throw new Error('Provide a release');
       }
 
-      properties.client = SentryLib.config(config.dsn, config.options).install();
+      properties.client = SentryLib.config(dsn, { release, serverName }).install();
       properties.installed = true;
     },
 
