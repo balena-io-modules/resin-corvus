@@ -104,8 +104,5 @@ module.exports = (MixpanelLib) => {
 
       properties.client.track(message, Object.assign({}, properties.context, context));
     }
-
-  // TODO: captureException
-
   };
 };

@@ -21,7 +21,6 @@ module.exports = (SentryLib, MixpanelLib) => {
   const sentry = Sentry(SentryLib);
   const mixpanel = Mixpanel(MixpanelLib);
 
-  const services = { sentry, mixpanel };
   const installedServices = [];
 
   const getSupportedServices = () => ['sentry', 'mixpanel'];
@@ -39,6 +38,18 @@ module.exports = (SentryLib, MixpanelLib) => {
      * services.getSupportedServices().map((service) => console.log(service));
      */
     getSupportedServices,
+
+    /**
+     * @summary Installed services
+     * @function
+     * @public
+     *
+     * @returns Array of installed services
+     *
+     * @example
+     * services.getInstalledServices().map((service) => console.log(service));
+     */
+    getInstalledServices: () => installedServices,
 
     /**
      * @summary Install service
@@ -72,67 +83,6 @@ module.exports = (SentryLib, MixpanelLib) => {
         }
 
         installedServices.push(serviceName);
-      });
-    },
-
-    /**
-     * @summary Uninstall service
-     * @function
-     * @public
-     *
-     * @param serviceName
-     *
-     * @example
-     * services.uninstall('sentry');
-     */
-    uninstall: (serviceName) => {
-      if (!exports.getSupportedServices().includes(serviceName)) {
-        throw new Error(`Unknown service: ${serviceName}`);
-      }
-
-      if (!installedServices.includes(serviceName)) {
-        throw new Error(`Service not installed: ${serviceName}`);
-      }
-
-      services[serviceName].uninstall();
-    },
-
-    /**
-     * @summary Sets context for all installed services
-     * @function
-     * @public
-     *
-     * @param context
-     *
-     * @example
-     * resinRaven.setContext({
-     *   user: 'joe'
-     * });
-     */
-    setContext: (context) => {
-      installedServices.forEach((service) => {
-        service.setContext(context);
-      });
-    },
-
-    /**
-     * @summary Send message to all installed services
-     * @function
-     * @public
-     *
-     * @description
-     * The context passed to this function is not saved as it is the one passed to `setContext`.
-     * It is an additional one-time context.
-     *
-     * @param {String} message
-     * @param {Object} context
-     *
-     * @example
-     * resinRaven.captureMessage('Informational message', { user: 'john' });
-     */
-    captureMessage: (message, context) => {
-      installedServices.forEach((service) => {
-        service.captureMessage(message, context);
       });
     }
   };
