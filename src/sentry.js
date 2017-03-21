@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const isBrowserLike = require('../is-browser-like');
+const isBrowserLike = require('./is-browser-like');
 
 module.exports = (SentryLib) => {
   const properties = {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-const Sentry = require('./services/sentry');
-const Mixpanel = require('./services/mixpanel');
+const Sentry = require('./sentry');
+const Mixpanel = require('./mixpanel');
 
 module.exports = (SentryLib, MixpanelLib) => {
   const sentry = Sentry(SentryLib);

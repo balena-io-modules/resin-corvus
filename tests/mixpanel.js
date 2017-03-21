@@ -17,7 +17,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const MixpanelLib = require('mixpanel');
-const Mixpanel = require('../../src/services/mixpanel');
+const Mixpanel = require('../src/mixpanel');
 
 describe('Services: Mixpanel', () => {
   const mixpanel = Mixpanel(MixpanelLib);

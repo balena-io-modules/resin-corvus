@@ -17,7 +17,7 @@
 const chai = require('chai');
 const sinon = require('sinon');
 const SentryLib = require('raven');
-const Sentry = require('../../src/services/sentry');
+const Sentry = require('../src/sentry');
 
 describe('Services: Sentry', () => {
   const sentry = Sentry(SentryLib);
