@@ -18,6 +18,7 @@ const chai = require('chai');
 const sinon = require('sinon');
 const SentryLib = require('raven');
 const Sentry = require('../src/sentry');
+const defaultContext = require('../src/default-context');
 
 describe('Services: Sentry', () => {
   const sentry = Sentry(SentryLib);
@@ -52,7 +53,8 @@ describe('Services: Sentry', () => {
       chai.expect(SentryLib.config.calledWith(dsn, {
         release,
         serverName: 'production',
-        autoBreadcrumbs: true
+        autoBreadcrumbs: true,
+        extra: defaultContext.electron
       })).to.be.true;
     });
 
@@ -62,7 +64,8 @@ describe('Services: Sentry', () => {
       chai.expect(SentryLib.config.calledWith(dsn, {
         release,
         serverName: 'server1',
-        autoBreadcrumbs: true
+        autoBreadcrumbs: true,
+        extra: defaultContext.electron
       })).to.be.true;
     });
 

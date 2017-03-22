@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
+const detect = require('detect-process');
 const ResinMixpanelClient = require('resin-mixpanel-client');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
+const defaultContext = require('./default-context');
+
+const env = detect.getName();
 
 const properties = {
   installed: false,
@@ -62,6 +66,7 @@ module.exports = {
     }
 
     properties.client = ResinMixpanelClient(token);
+    properties.client.set(defaultContext[env]);
     properties.installed = true;
   },
 

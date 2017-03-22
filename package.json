@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/resin-io-modules/resin-raven#readme",
   "dependencies": {
+    "arch": "^2.1.0",
     "deep-map-keys": "^1.2.0",
     "detect-process": "^1.0.4",
     "electron-is-running-in-asar": "^1.0.0",

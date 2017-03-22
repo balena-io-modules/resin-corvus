@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+const detect = require('detect-process');
+const defaultContext = require('./default-context');
+
+const env = detect.getName();
+
 module.exports = (SentryLib) => {
   const properties = {
     installed: false,
@@ -57,12 +62,14 @@ module.exports = (SentryLib) => {
         throw new Error('Sentry already installed');
       }
 
-      properties.client = SentryLib.config(dsn, {
+      const config = {
         release,
         serverName,
-        autoBreadcrumbs: true
-      }).install();
+        autoBreadcrumbs: true,
+        extra: defaultContext[env]
+      };
 
+      properties.client = SentryLib.config(dsn, config).install();
       properties.installed = true;
     },
 
