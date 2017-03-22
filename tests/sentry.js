@@ -41,10 +41,6 @@ describe('Services: Sentry', () => {
   });
 
   describe('install()', () => {
-    it('throws if release is missing', () => {
-      chai.expect(() => sentry.install(dsn)).to.throw(Error);
-    });
-
     it('throws if Sentry is already installed', () => {
       sentry.install(dsn, release);
       chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error);
@@ -53,13 +49,21 @@ describe('Services: Sentry', () => {
     it('calls SentryLib.config() with correct parameters when serverName is not given', () => {
       sentry.install(dsn, release);
       chai.expect(SentryLib.config.calledOnce).to.be.true;
-      chai.expect(SentryLib.config.calledWith(dsn, { release, serverName: 'production' })).to.be.true;
+      chai.expect(SentryLib.config.calledWith(dsn, {
+        release,
+        serverName: 'production',
+        autoBreadcrumbs: true
+      })).to.be.true;
     });
 
     it('calls SentryLib.config() with correct parameters when serverName is given', () => {
-      sentry.install(dsn, release, 'staging');
+      sentry.install(dsn, release, 'server1');
       chai.expect(SentryLib.config.calledOnce).to.be.true;
-      chai.expect(SentryLib.config.calledWith(dsn, { release, serverName: 'staging' })).to.be.true;
+      chai.expect(SentryLib.config.calledWith(dsn, {
+        release,
+        serverName: 'server1',
+        autoBreadcrumbs: true
+      })).to.be.true;
     });
 
     it('calls SentryLib.install() after SentryLib.config()', () => {

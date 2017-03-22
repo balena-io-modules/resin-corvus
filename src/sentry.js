@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
-const isBrowserLike = require('./is-browser-like');
-
 module.exports = (SentryLib) => {
   const properties = {
-    installed: false
+    installed: false,
+    enabled: true
   };
 
   return {
@@ -43,9 +41,6 @@ module.exports = (SentryLib) => {
      * @function
      * @public
      *
-     * At a minimum, the options parameter must contain the release.
-     * For information about the DSN, see https://docs.sentry.io/quickstart/#configure-the-dsn
-     *
      * @param {String} dsn - Sentry Data Source Name
      * @param {String} release
      * @param {String} [serverName]
@@ -53,7 +48,8 @@ module.exports = (SentryLib) => {
      * @example
      * sentry.install({
      *   dsn: 'https://<key>:<secret>@client.io/<project>',
-     *   release: '1.0.0'
+     *   release: '1.0.0',
+     *   serverName: 'server1'
      * });
      */
     install: (dsn, release, serverName = 'production') => {
@@ -61,11 +57,12 @@ module.exports = (SentryLib) => {
         throw new Error('Sentry already installed');
       }
 
-      if (_.isUndefined(release)) {
-        throw new Error('Provide a release');
-      }
+      properties.client = SentryLib.config(dsn, {
+        release,
+        serverName,
+        autoBreadcrumbs: true
+      }).install();
 
-      properties.client = SentryLib.config(dsn, { release, serverName }).install();
       properties.installed = true;
     },
 
@@ -87,46 +84,19 @@ module.exports = (SentryLib) => {
     },
 
     /**
-     * @summary Set context to send to Sentry
+     * @summary Capture exception
      * @function
      * @public
      *
-     * @param {Object} context
+     * @example
+     * sentry.captureException(exception)
      */
-    setContext: (context) => {
+    captureException: (exception) => {
       if (!properties.installed) {
         throw new Error('Sentry not installed');
       }
 
-      if (isBrowserLike()) {
-        this.raven.setUserContext(context.user);
-        this.raven.setExtraContext(context.extra);
-        this.raven.setTagsContext(context.tags);
-      } else {
-        this.raven.setContext(context);
-      }
-    },
-
-    captureMessage: (message, context) => {
-      if (!properties.installed) {
-        throw new Error('Sentry not installed');
-      }
-
-      properties.client.context(() => {
-        exports.setContext(context);
-        properties.client.captureMessage(message);
-      });
-    },
-
-    captureException: (exception, context) => {
-      if (!properties.installed) {
-        throw new Error('Sentry not installed');
-      }
-
-      properties.client.context(() => {
-        exports.setContext(context);
-        properties.client.captureException(exception, context);
-      });
+      properties.client.captureException(exception);
     }
   };
 };

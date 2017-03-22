@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const ResinLib = require('raven-js/dist/raven');
-const MixpanelLib = require('mixpanel-browser');
+const RavenLib = require('raven-js/dist/raven');
 
-module.exports = require('./src/resin-raven')(ResinLib, MixpanelLib);
+module.exports = require('./src/resin-raven')(RavenLib);

@@ -14,95 +14,95 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
+const ResinMixpanelClient = require('resin-mixpanel-client');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
 
-module.exports = (MixpanelLib) => {
-  const properties = {};
-  const isInstalled = () => !_.isUndefined(properties.client);
+const properties = {
+  installed: false,
+  enabled: true
+};
 
-  return {
-    /**
-     * @summary Is Mixpanel installed?
-     * @function
-     * @public
-     *
-     * @returns {Boolean} Whether Mixpanel is installed
-     *
-     * @example
-     * if (mixpanel.isInstalled()) {
-     *   console.log('Mixpanel is installed');
-     * }
-     */
-    isInstalled,
+const isInstalled = () => properties.installed;
 
-    /**
-    * @summary Install Mixpanel client
-    * @function
-    * @public
-    *
-    * @param {Object} token
-    * @param {Object} options
-    *
-    * @example
-    * mixpanel.install({
-    *   token: 'YOUR_TOKEN',
-    *   options: {
-    *     protocol: 'https'
-    *   }
-    * });
-    */
-    install: (config) => {
-      if (isInstalled()) {
-        throw new Error('Mixpanel already installed');
-      }
+module.exports = {
+  /**
+   * @summary Is Mixpanel installed?
+   * @function
+   * @public
+   *
+   * @returns {Boolean} Whether Mixpanel is installed
+   *
+   * @example
+   * if (mixpanel.isInstalled()) {
+   *   console.log('Mixpanel is installed');
+   * }
+   */
+  isInstalled,
 
-      properties.client = MixpanelLib.init(config.token, config.options);
-    },
-
-    /**
-     * @summary Uninstall Sentry client
-     * @function
-     * @public
-     *
-     * @example
-     * sentry.uninstall()
-     */
-    uninstall: () => {
-      if (!isInstalled()) {
-        throw new Error('Mixpanel not installed');
-      }
-
-      properties.client = undefined;
-      properties.context = {};
-    },
-
-    /**
-     * @summary Set context to send to Mixpanel
-     * @function
-     * @public
-     *
-     * @param {Object} context
-     */
-    setContext: (context) => {
-      if (!isInstalled()) {
-        throw new Error('Mixpanel not installed');
-      }
-
-      properties.context = prepareForMixpanel(context);
-    },
-
-    /**
-     * @summary Track message in Mixpanel
-     * @param {String} message
-     * @param {Object} context
-     */
-    captureMessage: (message, context) => {
-      if (!isInstalled()) {
-        throw new Error('Mixpanel not installed');
-      }
-
-      properties.client.track(message, Object.assign({}, properties.context, context));
+  /**
+  * @summary Install Mixpanel client
+  * @function
+  * @public
+  *
+  * @param {Object} token
+  * @param {Object} options
+  *
+  * @example
+  * mixpanel.install('YOUR_TOKEN');
+  */
+  install: (token, fake = false) => {
+    if (fake) {
+      properties.fake = true;
+      properties.installed = true;
+      return;
     }
-  };
+
+    if (isInstalled()) {
+      throw new Error('Mixpanel already installed');
+    }
+
+    properties.client = ResinMixpanelClient(token);
+    properties.installed = true;
+  },
+
+  /**
+   * @summary Uninstall Sentry client
+   * @function
+   * @public
+   *
+   * @example
+   * sentry.uninstall()
+   */
+  uninstall: () => {
+    if (properties.fake) {
+      properties.installed = false;
+      return;
+    }
+
+    if (!isInstalled()) {
+      throw new Error('Mixpanel not installed');
+    }
+
+    properties.client = undefined;
+  },
+
+  /**
+   * @summary Track message in Mixpanel
+   * @function
+   * @public
+   *
+   * @param {String} message
+   * @param {Object} data
+   */
+  track: (message, data) => {
+    if (properties.fake) {
+      return;
+    }
+
+    if (!isInstalled()) {
+      throw new Error('Mixpanel not installed');
+    }
+
+    properties.client.track(message, prepareForMixpanel(data));
+  }
 };
