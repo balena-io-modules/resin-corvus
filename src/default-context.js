@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
 const arch = require('arch');
 const os = require('os');
 
