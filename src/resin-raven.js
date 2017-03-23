@@ -119,7 +119,8 @@ module.exports = (SentryLib, fake = false) => {
      *   },
      *   options: {
      *     release: '1.0.0',
-     *     serverName: 'staging'
+     *     serverName: 'server1',
+     *     disableConsoleAlerts: true
      *   }
      * });
      */
@@ -140,16 +141,20 @@ module.exports = (SentryLib, fake = false) => {
         }
 
         if (serviceName === 'sentry') {
-          sentry.install(
-            config.services.sentry,
-            config.options.release,
-            config.options.serverName
-          );
+          sentry.install(config.services.sentry, {
+            release: config.options.release,
+            serverName: config.options.serverName,
+            disableConsoleAlerts: config.options.disableConsoleAlerts
+          });
           installedServices.push('sentry');
         }
 
         if (serviceName === 'mixpanel') {
-          mixpanel.install(config.services.mixpanel);
+          mixpanel.install(config.services.mixpanel, {
+            release: config.options.release,
+            serverName: config.options.serverName
+          });
+
           installedServices.push('mixpanel');
         }
       });

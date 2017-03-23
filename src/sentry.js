@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const _ = require('lodash');
 const detect = require('detect-process');
 const defaultContext = require('./default-context');
 
@@ -47,29 +48,29 @@ module.exports = (SentryLib) => {
      * @public
      *
      * @param {String} dsn - Sentry Data Source Name
-     * @param {String} release
-     * @param {String} [serverName]
+     * @param {Object} config Additional configuration passed to Sentry
      *
      * @example
-     * sentry.install({
-     *   dsn: 'https://<key>:<secret>@client.io/<project>',
+     * sentry.install('https://<key>:<secret>@client.io/<project>', {
      *   release: '1.0.0',
-     *   serverName: 'server1'
+     *   serverName: 'server1',
+     *   disableConsoleAlerts: true
      * });
      */
-    install: (dsn, release, serverName = 'production') => {
+    install: (dsn, config) => {
       if (properties.installed) {
         throw new Error('Sentry already installed');
       }
 
-      const config = {
-        release,
-        serverName,
-        autoBreadcrumbs: true,
-        extra: defaultContext[env]
-      };
+      const sentryConfig = _.cloneDeep(config);
 
-      properties.client = SentryLib.config(dsn, config).install();
+      _.defaults(sentryConfig, {
+        autoBreadcrumbs: true
+      });
+
+      sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env]);
+
+      properties.client = SentryLib.config(dsn, sentryConfig).install();
       properties.installed = true;
     },
 

@@ -47,23 +47,11 @@ describe('Services: Sentry', () => {
       chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error);
     });
 
-    it('calls SentryLib.config() with correct parameters when serverName is not given', () => {
-      sentry.install(dsn, release);
+    it('calls SentryLib.config() with correct parameters', () => {
+      sentry.install(dsn, { release: '1.0.0' });
       chai.expect(SentryLib.config.calledOnce).to.be.true;
       chai.expect(SentryLib.config.calledWith(dsn, {
         release,
-        serverName: 'production',
-        autoBreadcrumbs: true,
-        extra: defaultContext.electron
-      })).to.be.true;
-    });
-
-    it('calls SentryLib.config() with correct parameters when serverName is given', () => {
-      sentry.install(dsn, release, 'server1');
-      chai.expect(SentryLib.config.calledOnce).to.be.true;
-      chai.expect(SentryLib.config.calledWith(dsn, {
-        release,
-        serverName: 'server1',
         autoBreadcrumbs: true,
         extra: defaultContext.electron
       })).to.be.true;

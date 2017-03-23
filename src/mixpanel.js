@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const _ = require('lodash');
 const detect = require('detect-process');
 const ResinMixpanelClient = require('resin-mixpanel-client');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
@@ -48,25 +49,22 @@ module.exports = {
   * @function
   * @public
   *
-  * @param {Object} token
-  * @param {Object} options
+  * @param {String} token
+  * @param {Object} context
   *
   * @example
   * mixpanel.install('YOUR_TOKEN');
   */
-  install: (token, fake = false) => {
-    if (fake) {
-      properties.fake = true;
-      properties.installed = true;
-      return;
-    }
-
+  install: (token, context) => {
     if (isInstalled()) {
       throw new Error('Mixpanel already installed');
     }
 
     properties.client = ResinMixpanelClient(token);
-    properties.client.set(defaultContext[env]);
+    properties.client.set(_.defaults(
+      prepareForMixpanel(context),
+      prepareForMixpanel(defaultContext[env])
+    ));
     properties.installed = true;
   },
 
@@ -79,11 +77,6 @@ module.exports = {
    * sentry.uninstall()
    */
   uninstall: () => {
-    if (properties.fake) {
-      properties.installed = false;
-      return;
-    }
-
     if (!isInstalled()) {
       throw new Error('Mixpanel not installed');
     }
@@ -100,10 +93,6 @@ module.exports = {
    * @param {Object} data
    */
   track: (message, data) => {
-    if (properties.fake) {
-      return;
-    }
-
     if (!isInstalled()) {
       throw new Error('Mixpanel not installed');
     }

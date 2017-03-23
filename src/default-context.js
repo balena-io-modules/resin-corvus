@@ -40,7 +40,6 @@ const getHostArchitecture = () => {
   return process.arch;
 };
 
-
 module.exports.node = {
   arch: process.arch,
   node: process.version,
