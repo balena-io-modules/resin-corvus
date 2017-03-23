@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
 const detect = require('detect-process');
 const prepareForMixpanel = require('./prepare-for-mixpanel');
 const defaultContext = require('./default-context');
@@ -92,7 +91,7 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel not installed');
       }
 
-      const context = Object.assign({}, properties.context, prepareForMixpanel(data))
+      const context = Object.assign({}, properties.context, prepareForMixpanel(data));
 
       MixpanelLib.track(message, context);
     }
