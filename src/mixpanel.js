@@ -58,7 +58,7 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel already installed');
       }
 
-      properties.client = MixpanelLib.init(token);
+      MixpanelLib.init(token);
       properties.context = prepareForMixpanel(defaultContext[env]);
       properties.installed = true;
     },
@@ -76,7 +76,6 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel not installed');
       }
 
-      properties.client = undefined;
       properties.installed = false;
     },
 
@@ -95,7 +94,7 @@ module.exports = (MixpanelLib) => {
 
       const context = Object.assign({}, properties.context, prepareForMixpanel(data))
 
-      properties.client.track(message, context);
+      MixpanelLib.track(message, context);
     }
   };
 };
