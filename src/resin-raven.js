@@ -15,11 +15,12 @@
  */
 
 const _ = require('lodash');
-const mixpanel = require('./mixpanel');
+const Mixpanel = require('./mixpanel');
 const Sentry = require('./sentry');
 
-module.exports = (SentryLib, fake = false) => {
+module.exports = (SentryLib, MixpanelLib, fake = false) => {
   const sentry = Sentry(SentryLib);
+  const mixpanel = Mixpanel(MixpanelLib);
   const installedServices = [];
   let installed = false;
   let enabled = true;

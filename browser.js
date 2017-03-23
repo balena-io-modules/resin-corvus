@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
-const RavenLib = require('raven-js/dist/raven');
+const SentryLib = require('raven-js/dist/raven');
+const MixpanelLib = require('mixpanel-browser');
 
-module.exports = require('./src/resin-raven')(RavenLib);
+module.exports = require('./src/resin-raven')(SentryLib, MixpanelLib);
