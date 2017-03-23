@@ -15,8 +15,10 @@
  */
 
 const _ = require('lodash');
+_.mixin(require('lodash-deep'));
 const flatten = require('flat').flatten;
 const deepMapKeys = require('deep-map-keys');
+const path = require('path');
 
 /**
  * @summary Prepare object for Mixpanel
@@ -31,7 +33,7 @@ const deepMapKeys = require('deep-map-keys');
  * @return {*} transformed object
  *
  * @example
- * const object = prepareForMixpanel({
+ * const object = utils.flattenStartCase({
  *   object: {
  *     propertyName: 'value',
  *     ENVIRONMENT_VARIABLE: true
@@ -44,7 +46,7 @@ const deepMapKeys = require('deep-map-keys');
  * >   'Object ENVIRONMENT_VARIABLE': true
  * > }
  */
-module.exports = (object) => {
+exports.flattenStartCase = (object) => {
   if (_.isUndefined(object)) {
     return undefined;
   }
@@ -59,7 +61,7 @@ module.exports = (object) => {
   if (_.isArray(object)) {
     return _.map(object, (property) => {
       if (_.isObject(property)) {
-        return module.exports(property);
+        return exports.flattenStartCase(property);
       }
 
       return property;
@@ -80,4 +82,53 @@ module.exports = (object) => {
     delimiter: ' ',
     safe: true,
   });
+};
+
+/**
+ * @summary Create an object clone with all absolute paths replaced with the path basename
+ * @function
+ * @public
+ *
+ * @param {Object} object - original object
+ * @returns {Object} transformed object
+ *
+ * @example
+ * const anonymized = utils.hideAbsolutePathsInObject({
+ *   path1: '/home/john/rpi.img',
+ *   simpleProperty: null,
+ *   nested: {
+ *     path2: '/home/john/another-image.img',
+ *     path3: 'yet-another-image.img',
+ *     otherProperty: false
+ *   }
+ * });
+ *
+ * console.log(anonymized);
+ * > {
+ * >   path1: 'rpi.img',
+ * >   simpleProperty: null,
+ * >   nested: {
+ * >     path2: 'another-image.img',
+ * >     path3: 'yet-another-image.img',
+ * >     otherProperty: false
+ * >   }
+ * > }
+ */
+exports.hideAbsolutePathsInObject = (object) => {
+  return _.deepMapValues(object, (value) => {
+    if (!_.isString(value)) {
+      return value;
+    }
+
+    // Don't alter disk devices, even though they appear as full paths
+    if (_.some([
+        _.startsWith(value, '/dev/'),
+        _.startsWith(value, '\\\\.\\')
+      ])) {
+      return value;
+    }
+
+    return path.isAbsolute(value) ? path.basename(value) : value;
+  });
+
 };

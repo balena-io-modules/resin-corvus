@@ -1,6 +1,6 @@
 {
   "name": "resin-raven",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "description": "A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron",
   "main": "node.js",
   "browser": "browser.js",
@@ -30,6 +30,7 @@
     "electron-is-running-in-asar": "^1.0.0",
     "flat": "^2.0.1",
     "lodash": "^4.17.4",
+    "lodash-deep": "^2.0.0",
     "mixpanel": "^0.6.0",
     "mixpanel-browser": "^2.11.0",
     "raven": "^1.1.4",

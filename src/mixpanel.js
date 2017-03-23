@@ -15,7 +15,7 @@
  */
 
 const detect = require('detect-process');
-const prepareForMixpanel = require('./prepare-for-mixpanel');
+const utils = require('./utils');
 const defaultContext = require('./default-context');
 
 module.exports = (MixpanelLib) => {
@@ -58,7 +58,7 @@ module.exports = (MixpanelLib) => {
       }
 
       MixpanelLib.init(token);
-      properties.context = prepareForMixpanel(defaultContext[env]);
+      properties.context = utils.flattenStartCase(defaultContext[env]);
       properties.installed = true;
     },
 
@@ -91,9 +91,9 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel not installed');
       }
 
-      const context = Object.assign({}, properties.context, prepareForMixpanel(data));
+      const context = Object.assign({}, properties.context, utils.flattenStartCase(data));
 
-      MixpanelLib.track(message, context);
+      MixpanelLib.track(message, utils.hideAbsolutePathsInObject(context));
     }
   };
 };
