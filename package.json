@@ -1,6 +1,6 @@
 {
-  "name": "resin-raven",
-  "version": "1.0.0-beta.7",
+  "name": "resin-corvus",
+  "version": "1.0.0-beta.8",
   "description": "A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron",
   "main": "node.js",
   "browser": "browser.js",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/resin-io-modules/resin-raven.git"
+    "url": "git+https://github.com/resin-io-modules/resin-corvus.git"
   },
   "keywords": [
     "Resin.io",
@@ -20,9 +20,9 @@
   "author": "Ștefan Daniel Mihăilă",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/resin-io-modules/resin-raven/issues"
+    "url": "https://github.com/resin-io-modules/resin-corvus/issues"
   },
-  "homepage": "https://github.com/resin-io-modules/resin-raven#readme",
+  "homepage": "https://github.com/resin-io-modules/resin-corvus#readme",
   "dependencies": {
     "arch": "^2.1.0",
     "deep-map-keys": "^1.2.0",

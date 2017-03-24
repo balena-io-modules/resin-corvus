@@ -45,7 +45,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @returns Array of supported services
      *
      * @example
-     * resinRaven.getSupportedServices().map((service) => console.log(service));
+     * resinCorvus.getSupportedServices().map((service) => console.log(service));
      */
     getSupportedServices,
 
@@ -55,7 +55,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      *
      * @example
-     * resinRaven.logDebug('Debug info');
+     * resinCorvus.logDebug('Debug info');
      */
     logDebug,
 
@@ -65,7 +65,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      *
      * @example
-     * resinRaven.enable();
+     * resinCorvus.enable();
      */
     enable: () => {
       enabled = true;
@@ -77,7 +77,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      *
      * @example
-     * resinRaven.disable();
+     * resinCorvus.disable();
      */
     disable: () => {
       enabled = false;
@@ -89,7 +89,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      *
      * @example
-     * if (resinRaven.isEnabled()) {
+     * if (resinCorvus.isEnabled()) {
      *   console.log('Logging enabled');
      * }
      */
@@ -170,7 +170,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @param {Object} data
      *
      * @example
-     * resinRaven.logEvent('Close modal', {
+     * resinCorvus.logEvent('Close modal', {
      *   userAccepted: false
      * });
      */

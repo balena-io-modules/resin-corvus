@@ -24,4 +24,4 @@ const env = detect.getName();
 // In Electron, we don't want to log to external services if we're not running in asar
 const fake = env === 'electron' && !isRunningInAsar();
 
-module.exports = require('./src/resin-raven')(SentryLib, MixpanelLib, fake);
+module.exports = require('./src/resin-corvus')(SentryLib, MixpanelLib, fake);
