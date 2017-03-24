@@ -1,4 +1,4 @@
-# resin-sentry
+# resin-corvus
 A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron.
 
 ## Setup
