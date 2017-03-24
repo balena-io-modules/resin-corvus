@@ -114,21 +114,16 @@ exports.flattenStartCase = (object) => {
  * >   }
  * > }
  */
-exports.hideAbsolutePathsInObject = (object) => {
-  return _.deepMapValues(object, (value) => {
-    if (!_.isString(value)) {
-      return value;
-    }
+exports.hideAbsolutePathsInObject = object => _.deepMapValues(object, (value) => {
+  if (!_.isString(value)) {
+    return value;
+  }
 
-    // Don't alter disk devices, even though they appear as full paths
-    if (_.some([
-        _.startsWith(value, '/dev/'),
-        _.startsWith(value, '\\\\.\\')
-      ])) {
-      return value;
-    }
+  // Don't alter disk devices, even though they appear as full paths
+  if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
+    return value;
+  }
 
-    return path.isAbsolute(value) ? path.basename(value) : value;
-  });
+  return path.isAbsolute(value) ? path.basename(value) : value;
+});
 
-};
