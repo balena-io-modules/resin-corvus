@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-const SentryLib = require('raven-js/dist/raven');
-const MixpanelLib = require('mixpanel-browser');
-const fake = require('./should-fake');
+const detect = require('detect-process');
+const isRunningInAsar = require('electron-is-running-in-asar');
 
-module.exports = require('./src/resin-corvus')(SentryLib, MixpanelLib, fake);
+const env = detect.getName();
+
+// In Electron, we don't want to log to external services if we're not running in asar
+module.exports = env === 'electron' && !isRunningInAsar();

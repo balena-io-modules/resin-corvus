@@ -16,12 +16,6 @@
 
 const SentryLib = require('raven');
 const MixpanelLib = require('mixpanel');
-const detect = require('detect-process');
-const isRunningInAsar = require('electron-is-running-in-asar');
-
-const env = detect.getName();
-
-// In Electron, we don't want to log to external services if we're not running in asar
-const fake = env === 'electron' && !isRunningInAsar();
+const fake = require('./should-fake');
 
 module.exports = require('./src/resin-corvus')(SentryLib, MixpanelLib, fake);

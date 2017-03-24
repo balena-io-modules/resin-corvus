@@ -175,14 +175,6 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * });
      */
     logEvent: (message, data) => {
-      if (!enabled || fake) {
-        return;
-      }
-
-      if (installedServices.includes('mixpanel')) {
-        mixpanel.track(message, data);
-      }
-
       const debugMessage = _.attempt(() => {
         if (data) {
           return `${message} (${JSON.stringify(data)})`;
@@ -192,6 +184,10 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
       });
 
       logDebug(debugMessage);
+
+      if (enabled && !fake && installedServices.includes('mixpanel')) {
+        mixpanel.track(message, data);
+      }
     },
 
     /**
@@ -202,15 +198,17 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @param {Error} exception
      */
     logException: (exception) => {
+      /* eslint-disable no-console */
+      console.error(exception);
+      /* eslint-disable no-console */
+
       if (!enabled || fake) {
         return;
       }
 
-      sentry.captureException(exception);
-
-      /* eslint-disable no-console */
-      console.error(exception);
-      /* eslint-disable no-console */
+      if (enabled && !fake) {
+        sentry.captureException(exception);
+      }
     }
   };
 };
