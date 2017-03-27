@@ -142,7 +142,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           throw new Error(`Service not supported: ${serviceName}`);
         }
 
-        if (serviceName === 'sentry') {
+        if (serviceName === 'sentry' && !_.isNil(config.services.sentry)) {
           sentry.install(config.services.sentry, {
             release: config.options.release,
             serverName: config.options.serverName,
@@ -151,7 +151,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           installedServices.push('sentry');
         }
 
-        if (serviceName === 'mixpanel') {
+        if (serviceName === 'mixpanel' && !_.isNil(config.services.mixpanel)) {
           mixpanel.install(config.services.mixpanel, {
             release: config.options.release,
             serverName: config.options.serverName
