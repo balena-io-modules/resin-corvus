@@ -57,7 +57,7 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel already installed');
       }
 
-      properties.client = MixpanelLib.init(token);
+      properties.client = MixpanelLib.init(token) || MixpanelLib;
       properties.context = utils.flattenStartCase(defaultContext[env]);
       properties.installed = true;
     },
