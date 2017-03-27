@@ -17,6 +17,7 @@
 const _ = require('lodash');
 const Mixpanel = require('./mixpanel');
 const Sentry = require('./sentry');
+const utils = require('./utils');
 
 module.exports = (SentryLib, MixpanelLib, fake = false) => {
   const sentry = Sentry(SentryLib);
@@ -191,23 +192,23 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     },
 
     /**
-     * @summary Log exception
+     * @summary Log error
      * @function
      * @public
      *
-     * @param {Error} exception
+     * @param {Error} error
      */
-    logException: (exception) => {
+    logException: (error) => {
       /* eslint-disable no-console */
-      console.error(exception);
+      console.error(error);
       /* eslint-disable no-console */
 
       if (!enabled || fake) {
         return;
       }
 
-      if (enabled && !fake) {
-        sentry.captureException(exception);
+      if (utils.shouldReportError(error)) {
+        sentry.captureException(error);
       }
     }
   };

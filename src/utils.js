@@ -127,3 +127,24 @@ exports.hideAbsolutePathsInObject = object => _.deepMapValues(object, (value) =>
   return path.isAbsolute(value) ? path.basename(value) : value;
 });
 
+/**
+ * @summary Check whether an error should be reported to TrackJS
+ * @function
+ * @public
+ *
+ * @description
+ * In order to determine whether the error should be reported to external services,
+ * we check a property called `report`. For backwards compatibility, and
+ * to properly handle errors that we don't control, an error without
+ * this property is reported automatically.
+ *
+ * @param {Error} error - error
+ * @returns {Boolean} whether the error should be reported
+ *
+ * @example
+ * if (utils.shouldReportError(new Error('foo'))) {
+ *   console.log('We should report this error');
+ * }
+ */
+exports.shouldReportError = error => !_.has(error, ['report']) || Boolean(error.report);
+

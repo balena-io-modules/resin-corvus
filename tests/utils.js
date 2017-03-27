@@ -337,5 +337,94 @@ describe('Utils', () => {
       });
     });
   });
+
+  describe('.shouldReport()', () => {
+    it('should return true for a string error', () => {
+      const error = 'foo';
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for a number 0 error', () => {
+      const error = 0;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for a number 1 error', () => {
+      const error = 1;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for a number -1 error', () => {
+      const error = -1;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for an array error', () => {
+      const error = [1, 2, 3];
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for an undefined error', () => {
+      const error = undefined;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for a null error', () => {
+      const error = null;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for an empty object error', () => {
+      const error = {};
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for a basic error', () => {
+      const error = new Error('foo');
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return true for an error with a report true property', () => {
+      const error = new Error('foo');
+      error.report = true;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should return false for an error with a report false property', () => {
+      const error = new Error('foo');
+      error.report = false;
+      chai.expect(utils.shouldReportError(error)).to.be.false;
+    });
+
+    it('should return false for an error with a report undefined property', () => {
+      const error = new Error('foo');
+      error.report = undefined;
+      chai.expect(utils.shouldReportError(error)).to.be.false;
+    });
+
+    it('should return false for an error with a report null property', () => {
+      const error = new Error('foo');
+      error.report = null;
+      chai.expect(utils.shouldReportError(error)).to.be.false;
+    });
+
+    it('should return false for an error with a report 0 property', () => {
+      const error = new Error('foo');
+      error.report = 0;
+      chai.expect(utils.shouldReportError(error)).to.be.false;
+    });
+
+    it('should return true for an error with a report 1 property', () => {
+      const error = new Error('foo');
+      error.report = 1;
+      chai.expect(utils.shouldReportError(error)).to.be.true;
+    });
+
+    it('should cast the report property to boolean', () => {
+      const error = new Error('foo');
+      error.report = '';
+      chai.expect(utils.shouldReportError(error)).to.be.false;
+    });
+  });
 });
 
