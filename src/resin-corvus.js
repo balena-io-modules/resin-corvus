@@ -36,9 +36,17 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     /* eslint-enable no-console */
   };
 
-  let shouldReport = _.constant(true);
+  let shouldReportCallback = _.constant(true);
 
-  const shouldSendToExternalServices = () => enabled && !fake && shouldReport();
+  const setShouldReport = (callback) => {
+    if (_.isFunction(callback)) {
+      throw new Error('Function expected');
+    } else {
+      shouldReportCallback = _.constant(callback);
+    }
+  };
+
+  const shouldSendToExternalServices = () => enabled && !fake && shouldReportCallback();
 
   return {
 
@@ -127,7 +135,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *     release: '1.0.0',
      *     serverName: 'server1',
      *     disableConsoleAlerts: true,
-     *     shouldReport: () => true
+     *     shouldReportCallback: () => true
      *   }
      * });
      */
@@ -143,11 +151,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
       installed = true;
 
       if (!_.isNil(config.options.shouldReport)) {
-        if (_.isFunction(config.options.shouldReport)) {
-          shouldReport = config.options.shouldReport;
-        } else {
-          shouldReport = _.constant(config.options.shouldReport);
-        }
+        setShouldReport(config.options.shouldReport);
       }
 
       Object.keys(config.services).forEach((serviceName) => {
@@ -221,6 +225,15 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
       }
 
       sentry.captureException(error);
-    }
+    },
+
+    /**
+     * @summary Set function to check if events should be reported to external services
+     * @function
+     * @public
+     *
+     * @param {Function} callback
+     */
+    shouldReport: shouldReportCallback
   };
 };
