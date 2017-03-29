@@ -42,7 +42,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     if (!_.isFunction(callback)) {
       throw new Error('Function expected');
     } else {
-      shouldReportCallback = _.constant(callback);
+      shouldReportCallback = callback;
     }
   };
 
@@ -234,6 +234,6 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *
      * @param {Function} callback
      */
-    shouldReport: shouldReportCallback
+    shouldReport: setShouldReport
   };
 };
