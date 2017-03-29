@@ -39,7 +39,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
   let shouldReportCallback = _.constant(true);
 
   const setShouldReport = (callback) => {
-    if (_.isFunction(callback)) {
+    if (!_.isFunction(callback)) {
       throw new Error('Function expected');
     } else {
       shouldReportCallback = _.constant(callback);
