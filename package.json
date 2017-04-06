@@ -1,6 +1,6 @@
 {
   "name": "resin-corvus",
-  "version": "1.0.0-beta.19",
+  "version": "1.0.0-beta.20",
   "description": "A wrapper around Sentry and Mixpanel that works in the browser, Node and Electron",
   "main": "node.js",
   "browser": "browser.js",

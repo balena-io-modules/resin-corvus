@@ -137,7 +137,6 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *   options: {
      *     release: '1.0.0',
      *     serverName: 'server1',
-     *     disableConsoleAlerts: true,
      *     shouldReportCallback: () => true,
      *     disableConsoleOutput: true
      *   }
@@ -169,7 +168,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           sentry.install(config.services.sentry, {
             release: config.options.release,
             serverName: config.options.serverName,
-            disableConsoleAlerts: config.options.disableConsoleAlerts
+            disableConsoleAlerts: disableConsoleOutput
           });
           installedServices.push('sentry');
         }
