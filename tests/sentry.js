@@ -53,7 +53,7 @@ describe('Services: Sentry', () => {
       chai.expect(SentryLib.config.calledWith(dsn, {
         release,
         autoBreadcrumbs: true,
-        extra: defaultContext.electron
+        extra: defaultContext.electron,
       })).to.be.true;
     });
 

@@ -25,15 +25,18 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
   const installedServices = [];
   let installed = false;
   let enabled = true;
+  let disableConsoleOutput = false;
 
   const getSupportedServices = () => ['sentry', 'mixpanel'];
 
   const logDebug = (message) => {
     const debugMessage = `${new Date()} ${message}`;
 
-    /* eslint-disable no-console */
-    console.log(debugMessage);
-    /* eslint-enable no-console */
+    if (!disableConsoleOutput) {
+      /* eslint-disable no-console */
+      console.log(debugMessage);
+      /* eslint-enable no-console */
+    }
   };
 
   let shouldReportCallback = _.constant(true);
@@ -135,7 +138,8 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *     release: '1.0.0',
      *     serverName: 'server1',
      *     disableConsoleAlerts: true,
-     *     shouldReportCallback: () => true
+     *     shouldReportCallback: () => true,
+     *     disableConsoleOutput: true
      *   }
      * });
      */
@@ -153,6 +157,8 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
       if (!_.isNil(config.options.shouldReport)) {
         setShouldReport(config.options.shouldReport);
       }
+
+      disableConsoleOutput = Boolean(config.options.disableConsoleOutput);
 
       Object.keys(config.services).forEach((serviceName) => {
         if (!getSupportedServices().includes(serviceName)) {
@@ -216,9 +222,11 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @param {Error} error
      */
     logException: (error) => {
-      /* eslint-disable no-console */
-      console.error(error);
-      /* eslint-disable no-console */
+      if (!disableConsoleOutput) {
+        /* eslint-disable no-console */
+        console.error(error);
+        /* eslint-disable no-console */
+      }
 
       if (!installedServices.includes('sentry') || !shouldSendToExternalServices() || !utils.shouldReportError(error)) {
         return;
