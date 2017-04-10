@@ -143,6 +143,8 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * });
      */
     install: (config) => {
+      disableConsoleOutput = Boolean(config.options.disableConsoleOutput);
+
       if (fake) {
         return;
       }
@@ -156,8 +158,6 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
       if (!_.isNil(config.options.shouldReport)) {
         setShouldReport(config.options.shouldReport);
       }
-
-      disableConsoleOutput = Boolean(config.options.disableConsoleOutput);
 
       Object.keys(config.services).forEach((serviceName) => {
         if (!getSupportedServices().includes(serviceName)) {
