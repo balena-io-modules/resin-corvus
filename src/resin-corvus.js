@@ -25,14 +25,14 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
   const installedServices = [];
   let installed = false;
   let enabled = true;
-  let disableConsoleOutput = false;
+  let consoleOutputDisabled = false;
 
   const getSupportedServices = () => ['sentry', 'mixpanel'];
 
   const logDebug = (message) => {
     const debugMessage = `${new Date()} ${message}`;
 
-    if (!disableConsoleOutput) {
+    if (!consoleOutputDisabled) {
       /* eslint-disable no-console */
       console.log(debugMessage);
       /* eslint-enable no-console */
@@ -138,12 +138,12 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *     release: '1.0.0',
      *     serverName: 'server1',
      *     shouldReportCallback: () => true,
-     *     disableConsoleOutput: true
+     *     consoleOutputDisabled: true
      *   }
      * });
      */
     install: (config) => {
-      disableConsoleOutput = Boolean(config.options.disableConsoleOutput);
+      consoleOutputDisabled = Boolean(config.options.disableConsoleOutput);
 
       if (fake) {
         return;
@@ -168,7 +168,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           sentry.install(config.services.sentry, {
             release: config.options.release,
             serverName: config.options.serverName,
-            disableConsoleAlerts: disableConsoleOutput
+            disableConsoleAlerts: consoleOutputDisabled
           });
           installedServices.push('sentry');
         }
@@ -221,7 +221,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @param {Error} error
      */
     logException: (error) => {
-      if (!disableConsoleOutput) {
+      if (!consoleOutputDisabled) {
         /* eslint-disable no-console */
         console.error(error);
         /* eslint-disable no-console */
@@ -241,6 +241,24 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      *
      * @param {Function} callback
      */
-    shouldReport: setShouldReport
+    shouldReport: setShouldReport,
+
+    /**
+     * @summary Disable console output
+     * @function
+     * @public
+     */
+    disableConsoleOutput: () => {
+      consoleOutputDisabled = true;
+    },
+
+    /**
+     * @summary Enable console output
+     * @function
+     * @public
+     */
+    enableConsoleOutput: () => {
+      consoleOutputDisabled = false;
+    }
   };
 };
