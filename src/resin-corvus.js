@@ -175,7 +175,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
 
         if (serviceName === 'mixpanel' && !_.isNil(config.services.mixpanel)) {
           mixpanel.install(config.services.mixpanel, {
-            release: config.options.release,
+            version: config.options.release,
             serverName: config.options.serverName
           });
 

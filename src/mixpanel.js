@@ -17,6 +17,7 @@
 const detect = require('detect-process');
 const utils = require('./utils');
 const defaultContext = require('./default-context');
+const _ = require('lodash');
 
 module.exports = (MixpanelLib) => {
   const env = detect.getName();
@@ -48,17 +49,20 @@ module.exports = (MixpanelLib) => {
      * @public
      *
      * @param {String} token
+     * @param {Object} config
      *
      * @example
-     * mixpanel.install('YOUR_TOKEN');
+     * mixpanel.install('YOUR_TOKEN', {
+     *   version: '1.0.0'
+     * });
      */
-    install: (token) => {
+    install: (token, config) => {
       if (isInstalled()) {
         throw new Error('Mixpanel already installed');
       }
 
       properties.client = MixpanelLib.init(token) || MixpanelLib;
-      properties.context = utils.flattenStartCase(defaultContext[env]);
+      properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]));
       properties.installed = true;
     },
 
