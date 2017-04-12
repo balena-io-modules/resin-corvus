@@ -18,7 +18,6 @@ const chai = require('chai');
 const sinon = require('sinon');
 const SentryLib = require('raven');
 const Sentry = require('../src/sentry');
-const defaultContext = require('../src/default-context');
 
 describe('Services: Sentry', () => {
   const sentry = Sentry(SentryLib);
@@ -45,17 +44,6 @@ describe('Services: Sentry', () => {
     it('throws if Sentry is already installed', () => {
       sentry.install(dsn, release);
       chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error);
-    });
-
-    it('calls SentryLib.config() with correct parameters', () => {
-      sentry.install(dsn, { release: '1.0.0' });
-      chai.expect(SentryLib.config.calledOnce).to.be.true;
-      chai.expect(SentryLib.config.calledWith(dsn, {
-        release,
-        autoBreadcrumbs: true,
-        allowSecretKey: true,
-        extra: defaultContext.electron,
-      })).to.be.true;
     });
 
     it('calls SentryLib.install() after SentryLib.config()', () => {

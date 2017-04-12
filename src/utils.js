@@ -114,18 +114,25 @@ exports.flattenStartCase = (object) => {
  * >   }
  * > }
  */
-exports.hideAbsolutePathsInObject = object => _.deepMapValues(object, (value) => {
-  if (!_.isString(value)) {
-    return value;
+exports.hideAbsolutePathsInObject = (object) => {
+  if (_.isString(object)) {
+    const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word));
+    return words.join(' ');
   }
 
-  // Don't alter disk devices, even though they appear as full paths
-  if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
-    return value;
-  }
+  return _.deepMapValues(object, (value) => {
+    if (!_.isString(value)) {
+      return value;
+    }
 
-  return path.isAbsolute(value) ? path.basename(value) : value;
-});
+    // Don't alter disk devices, even though they appear as full paths
+    if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
+      return value;
+    }
+
+    return path.isAbsolute(value) ? path.basename(value) : value;
+  });
+};
 
 /**
  * @summary Check whether an error should be reported to TrackJS
@@ -147,4 +154,3 @@ exports.hideAbsolutePathsInObject = object => _.deepMapValues(object, (value) =>
  * }
  */
 exports.shouldReportError = error => !_.has(error, ['report']) || Boolean(error.report);
-

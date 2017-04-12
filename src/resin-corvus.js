@@ -34,7 +34,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
 
     if (!consoleOutputDisabled) {
       /* eslint-disable no-console */
-      console.log(debugMessage);
+      console.log(utils.hideAbsolutePathsInObject(debugMessage));
       /* eslint-enable no-console */
     }
   };
@@ -223,7 +223,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     logException: (error) => {
       if (!consoleOutputDisabled) {
         /* eslint-disable no-console */
-        console.error(error);
+        console.error(utils.hideAbsolutePathsInObject(error));
         /* eslint-disable no-console */
       }
 

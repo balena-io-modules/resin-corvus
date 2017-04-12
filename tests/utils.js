@@ -210,6 +210,10 @@ describe('Utils', () => {
         });
       });
 
+      it('should work on strings', () => {
+        chai.expect(utils.hideAbsolutePathsInObject('path /home/john/rpi.img')).to.deep.equal('path rpi.img');
+      });
+
       it('should not alter relative paths', () => {
         const object = {
           path: 'foo/bar'

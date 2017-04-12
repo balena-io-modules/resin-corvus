@@ -17,6 +17,7 @@
 const _ = require('lodash');
 const detect = require('detect-process');
 const defaultContext = require('./default-context');
+const utils = require('./utils');
 
 const env = detect.getName();
 
@@ -66,7 +67,8 @@ module.exports = (SentryLib) => {
 
       _.defaults(sentryConfig, {
         autoBreadcrumbs: true,
-        allowSecretKey: true
+        allowSecretKey: true,
+        dataCallback: utils.hideAbsolutePathsInObject
       });
 
       sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env]);
