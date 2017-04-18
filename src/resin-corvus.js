@@ -223,7 +223,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     logException: (error) => {
       if (!consoleOutputDisabled) {
         /* eslint-disable no-console */
-        console.error(utils.hideAbsolutePathsInObject(error));
+        console.error(JSON.stringify(utils.hideAbsolutePathsInObject(error)));
         /* eslint-disable no-console */
       }
 
