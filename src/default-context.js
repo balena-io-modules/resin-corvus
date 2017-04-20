@@ -16,6 +16,7 @@
 
 const arch = require('arch');
 const os = require('os');
+const osLocale = require('os-locale');
 
 /**
  * @summary Get host architecture
@@ -49,6 +50,7 @@ module.exports.node = {
   totalMemory: os.totalmem(),
   startFreeMemory: os.freemem(),
   hostArch: getHostArchitecture(),
+  locale: osLocale.sync()
 };
 
 module.exports.electron = Object.assign({}, module.exports.node, {
