@@ -73,7 +73,7 @@ module.exports = (SentryLib) => {
 
       sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env]);
 
-      properties.client = SentryLib.config(dsn, sentryConfig).install();
+      properties.client = SentryLib.config(dsn, sentryConfig).install().on('error', _.noop);
       properties.installed = true;
     },
 
