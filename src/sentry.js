@@ -66,7 +66,7 @@ module.exports = (SentryLib) => {
       const sentryConfig = _.cloneDeep(config);
 
       _.defaults(sentryConfig, {
-        autoBreadcrumbs: true,
+        autoBreadcrumbs: false,
         allowSecretKey: true,
         dataCallback: utils.hideAbsolutePathsInObject
       });
