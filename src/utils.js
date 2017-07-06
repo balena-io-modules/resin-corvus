@@ -94,8 +94,8 @@ exports.flattenStartCase = (object) => {
  *
  * @example
  */
-exports.removeContainedPaths = (str) => {
-  const absolutify = (pathname) => {
+exports.basifyContainedPaths = (str) => {
+  const basify = (pathname) => {
 
     // Don't alter disk devices, even though they appear as full paths
     if (pathname.startsWith('/dev/') || pathname.startsWith('\\\\.\\')) {
@@ -111,10 +111,10 @@ exports.removeContainedPaths = (str) => {
     const parenSections = _.split(word, '(');
 
     if (parenSections.length > 1) {
-      return _.join(_.map(parenSections, absolutify), '(');
+      return _.join(_.map(parenSections, basify), '(');
 
     } else {
-      return absolutify(word);
+      return basify(word);
     }
   }), ' ');
 };
@@ -160,7 +160,7 @@ exports.hideAbsolutePathsInObject = (object) => {
   }
 
   if (_.isString(object)) {
-    return exports.removeContainedPaths(object);
+    return exports.basifyContainedPaths(object);
   }
 
   return _.deepMapValues(object, (value) => {
@@ -168,7 +168,7 @@ exports.hideAbsolutePathsInObject = (object) => {
       return value;
     }
 
-    return exports.removeContainedPaths(value);
+    return exports.basifyContainedPaths(value);
   });
 };
 
