@@ -163,7 +163,31 @@ describe('Utils', () => {
 
       chai.expect(hiddenPaths).to.deep.equal({
         message: 'Hello, World!',
-        stack: error.stack
+        stack: utils.removeContainedPaths(error.stack)
+      });
+    });
+
+    it('should return a plain object with relative paths given an error object with absolute paths', function() {
+      const error = new Error('Hello, World!');
+      error.stack = 'Hello, World! (/home/test/file.js:388) at /home/test/another-file.js:107';
+
+      const hiddenPaths = utils.hideAbsolutePathsInObject(error);
+
+      chai.expect(hiddenPaths).to.deep.equal({
+        message: 'Hello, World!',
+        stack: utils.removeContainedPaths(error.stack)
+      });
+    });
+
+    it('should handle spaces in error object paths', function() {
+      const error = new Error('Hello, World!');
+      error.stack = 'Hello, World! (/home/some folder/some file.js:388) at /home/another folder/another file.js:107';
+
+      const hiddenPaths = utils.hideAbsolutePathsInObject(error);
+
+      chai.expect(hiddenPaths).to.deep.equal({
+        message: 'Hello, World!',
+        stack: 'Hello, World! (some file.js:388) at another file.js:107'
       });
     });
 

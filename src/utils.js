@@ -85,6 +85,41 @@ exports.flattenStartCase = (object) => {
 };
 
 /**
+ * @summary Remove paths contained in strings
+ * @function
+ * @public
+ *
+ * @param {String} str - string potentially containing paths
+ * @returns {String} string with basenamed paths if any
+ *
+ * @example
+ */
+exports.removeContainedPaths = (str) => {
+  const absolutify = (pathname) => {
+
+    // Don't alter disk devices, even though they appear as full paths
+    if (pathname.startsWith('/dev/') || pathname.startsWith('\\\\.\\')) {
+      return pathname;
+
+    } else {
+      return path.isAbsolute(pathname) ? path.basename(pathname) : pathname;
+    }
+  };
+
+  const words = _.split(str, ' ');
+  return _.join(_.map(words, (word) => {
+    const parenSections = _.split(word, '(');
+
+    if (parenSections.length > 1) {
+      return _.join(_.map(parenSections, absolutify), '(');
+
+    } else {
+      return absolutify(word);
+    }
+  }), ' ');
+};
+
+/**
  * @summary Create an object clone with all absolute paths replaced with the path basename
  * @function
  * @public
@@ -125,8 +160,7 @@ exports.hideAbsolutePathsInObject = (object) => {
   }
 
   if (_.isString(object)) {
-    const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word));
-    return words.join(' ');
+    return exports.removeContainedPaths(object);
   }
 
   return _.deepMapValues(object, (value) => {
@@ -134,12 +168,7 @@ exports.hideAbsolutePathsInObject = (object) => {
       return value;
     }
 
-    // Don't alter disk devices, even though they appear as full paths
-    if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
-      return value;
-    }
-
-    return path.isAbsolute(value) ? path.basename(value) : value;
+    return exports.removeContainedPaths(value);
   });
 };
 
