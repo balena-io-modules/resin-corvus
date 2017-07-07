@@ -1,0 +1,13 @@
+language: node_js
+sudo: false
+node_js:
+  - "6.10.3"
+
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/0a019c8b9828eb9f6a72
+    on_success: change
+    on_failure: always
+    on_start: never
