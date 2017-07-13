@@ -95,6 +95,8 @@ exports.flattenStartCase = (object) => {
  * @example
  */
 exports.basifyContainedPaths = (str) => {
+  console.log(__dirname);
+
   const basify = (pathname) => {
 
     // Don't alter disk devices, even though they appear as full paths
