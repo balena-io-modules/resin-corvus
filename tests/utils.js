@@ -138,6 +138,10 @@ describe('Utils', () => {
   });
 
   describe('.hideAbsolutePathsInObject()', () => {
+
+    // Create a path relative to the system and the project directory
+    const createPath = (filename) => path.join(__dirname, filename);
+
     it('should return undefined if given undefined', () => {
       chai.expect(utils.hideAbsolutePathsInObject(undefined)).to.be.undefined;
     });
@@ -163,31 +167,31 @@ describe('Utils', () => {
 
       chai.expect(hiddenPaths).to.deep.equal({
         message: 'Hello, World!',
-        stack: utils.removeContainedPaths(error.stack)
+        stack: utils.basifyContainedPaths(error.stack, path.resolve(__dirname, '..'))
       });
     });
 
     it('should return a plain object with relative paths given an error object with absolute paths', function() {
       const error = new Error('Hello, World!');
-      error.stack = 'Hello, World! (/home/test/file.js:388) at /home/test/another-file.js:107';
+      error.stack = `Hello, World! (${createPath('file.js')}:388) at ${createPath('another-file.js')}:107`;
 
       const hiddenPaths = utils.hideAbsolutePathsInObject(error);
 
       chai.expect(hiddenPaths).to.deep.equal({
         message: 'Hello, World!',
-        stack: utils.removeContainedPaths(error.stack)
+        stack: utils.basifyContainedPaths(error.stack, path.resolve(__dirname, '..'))
       });
     });
 
     it('should handle spaces in error object paths', function() {
       const error = new Error('Hello, World!');
-      error.stack = 'Hello, World! (/home/some folder/some file.js:388) at /home/another folder/another file.js:107';
+      error.stack = `Hello, World! (${createPath('some normal file.js')}:388) at ${createPath('another normal file.js')}:107`;
 
       const hiddenPaths = utils.hideAbsolutePathsInObject(error);
 
       chai.expect(hiddenPaths).to.deep.equal({
         message: 'Hello, World!',
-        stack: 'Hello, World! (some file.js:388) at another file.js:107'
+        stack: 'Hello, World! (/tests/some normal file.js:388) at /tests/another normal file.js:107'
       });
     });
 
@@ -207,25 +211,22 @@ describe('Utils', () => {
       it('should replace absolute paths with the basename', () => {
         const object = {
           prop1: 'some value',
-          prop2: '/home/john/rpi.img'
         };
+        const prop = '/home/john/rpi.img';
 
-        chai.expect(utils.hideAbsolutePathsInObject(object)).to.deep.equal({
-          prop1: 'some value',
-          prop2: 'rpi.img'
-        });
+        chai.expect(utils.basifyContainedPaths(prop, '/home/john')).to.deep.equal('/rpi.img');
       });
 
       it('should replace nested absolute paths with the basename', () => {
         const object = {
           nested: {
-            path: '/home/john/rpi.img'
+            path: createPath('rpi.img')
           }
         };
 
         chai.expect(utils.hideAbsolutePathsInObject(object)).to.deep.equal({
           nested: {
-            path: 'rpi.img'
+            path: '/tests/rpi.img'
           }
         });
       });
@@ -245,7 +246,7 @@ describe('Utils', () => {
       });
 
       it('should work on strings', () => {
-        chai.expect(utils.hideAbsolutePathsInObject('path /home/john/rpi.img')).to.deep.equal('path rpi.img');
+        chai.expect(utils.basifyContainedPaths('path /home/john/rpi.img', '/home/john')).to.deep.equal('path /rpi.img');
       });
 
       it('should not alter relative paths', () => {
@@ -263,26 +264,26 @@ describe('Utils', () => {
           foo: 'foo',
           bar: [
             {
-              path: '/foo/bar/baz'
+              path: createPath('baz')
             },
             {
-              path: '/foo/bar/baz'
+              path: createPath('baz')
             },
             {
-              path: '/foo/bar/baz'
+              path: createPath('baz')
             }
           ]
         })).to.deep.equal({
           foo: 'foo',
           bar: [
             {
-              path: 'baz'
+              path: '/tests/baz'
             },
             {
-              path: 'baz'
+              path: '/tests/baz'
             },
             {
-              path: 'baz'
+              path: '/tests/baz'
             }
           ]
         });
@@ -303,27 +304,21 @@ describe('Utils', () => {
       });
 
       it('should replace absolute paths with the basename', () => {
-        const object = {
-          prop1: 'some value',
-          prop2: 'C:\\Users\\John\\rpi.img'
-        };
+        const prop2 = 'C:\\Users\\John\\rpi.img'
 
-        chai.expect(utils.hideAbsolutePathsInObject(object)).to.deep.equal({
-          prop1: 'some value',
-          prop2: 'rpi.img'
-        });
+        chai.expect(utils.basifyContainedPaths(prop2, 'C:\\Users\\John')).to.deep.equal('\\rpi.img');
       });
 
       it('should replace nested absolute paths with the basename', () => {
         const object = {
           nested: {
-            path: 'C:\\Users\\John\\rpi.img'
+            path: createPath('rpi.img')
           }
         };
 
         chai.expect(utils.hideAbsolutePathsInObject(object)).to.deep.equal({
           nested: {
-            path: 'rpi.img'
+            path: '/tests/rpi.img'
           }
         });
       });
@@ -356,20 +351,20 @@ describe('Utils', () => {
         chai.expect(utils.hideAbsolutePathsInObject({
           foo: 'foo',
           bar: [{
-            path: 'C:\\foo\\bar\\baz'
+            path: createPath('baz')
           }, {
-            path: 'C:\\foo\\bar\\baz'
+            path: createPath('baz')
           }, {
-            path: 'C:\\foo\\bar\\baz'
+            path: createPath('baz')
           }]
         })).to.deep.equal({
           foo: 'foo',
           bar: [{
-            path: 'baz'
+            path: '/tests/baz'
           }, {
-            path: 'baz'
+            path: '/tests/baz'
           }, {
-            path: 'baz'
+            path: '/tests/baz'
           }]
         });
       });

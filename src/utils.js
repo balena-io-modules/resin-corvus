@@ -94,8 +94,16 @@ exports.flattenStartCase = (object) => {
  *
  * @example
  */
-exports.basifyContainedPaths = (str) => {
-  console.log(__dirname);
+exports.basifyContainedPaths = (str, dirname) => {
+  let oldStr;
+  let newStr = str;
+
+  while (oldStr !== newStr) {
+    oldStr = newStr;
+    newStr = newStr.replace(dirname, '');
+  }
+
+  return newStr;
 
   const basify = (pathname) => {
 
@@ -152,6 +160,7 @@ exports.basifyContainedPaths = (str) => {
  * > }
  */
 exports.hideAbsolutePathsInObject = (object) => {
+  const dirname = path.resolve(__dirname, '..');
   if (_.isError(object)) {
 
     // Turn the Error into an Object
@@ -162,7 +171,7 @@ exports.hideAbsolutePathsInObject = (object) => {
   }
 
   if (_.isString(object)) {
-    return exports.basifyContainedPaths(object);
+    return exports.basifyContainedPaths(object, dirname);
   }
 
   return _.deepMapValues(object, (value) => {
@@ -170,7 +179,7 @@ exports.hideAbsolutePathsInObject = (object) => {
       return value;
     }
 
-    return exports.basifyContainedPaths(value);
+    return exports.basifyContainedPaths(value, dirname);
   });
 };
 
