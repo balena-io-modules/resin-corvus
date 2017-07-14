@@ -157,6 +157,16 @@ describe('Utils', () => {
       chai.expect(utils.hideAbsolutePathsInObject(object)).to.deep.equal(object);
     });
 
+    it('should return a plain object when given an error object', function() {
+      const error = new Error('Hello, World!');
+      const hiddenPaths = utils.hideAbsolutePathsInObject(error);
+
+      chai.expect(hiddenPaths).to.deep.equal({
+        message: 'Hello, World!',
+        stack: error.stack
+      });
+    });
+
     describe('given UNIX paths', () => {
       beforeEach(() => {
         this.isAbsolute = path.isAbsolute;

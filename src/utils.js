@@ -115,6 +115,15 @@ exports.flattenStartCase = (object) => {
  * > }
  */
 exports.hideAbsolutePathsInObject = (object) => {
+  if (_.isError(object)) {
+
+    // Turn the Error into an Object
+    object = _.reduce(Object.getOwnPropertyNames(object), (accumulator, key) => {
+      accumulator[key] = object[key];
+      return accumulator;
+    }, {});
+  }
+
   if (_.isString(object)) {
     const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word));
     return words.join(' ');
