@@ -118,13 +118,10 @@ exports.hideAbsolutePathsInObject = (object) => {
   if (_.isError(object)) {
 
     // Turn the Error into an Object
-    const error = {};
-
-    _.map(Object.getOwnPropertyNames(object), (key) => {
-      error[key] = object[key];
-    });
-
-    object = error;
+    object = _.reduce(Object.getOwnPropertyNames(object), (accumulator, key) => {
+      accumulator[key] = object[key];
+      return accumulator;
+    }, {});
   }
 
   if (_.isString(object)) {
