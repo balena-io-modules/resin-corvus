@@ -68,7 +68,8 @@ module.exports = (SentryLib) => {
       _.defaults(sentryConfig, {
         autoBreadcrumbs: true,
         allowSecretKey: true,
-        dataCallback: utils.hideAbsolutePathsInObject
+        dataCallback: utils.hideAbsolutePathsInObject,
+        transport: SentryLib.transports.https
       });
 
       sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env]);
