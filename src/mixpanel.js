@@ -38,8 +38,8 @@ module.exports = (MixpanelLib) => {
      *
      * @example
      * if (mixpanel.isInstalled()) {
-   *   console.log('Mixpanel is installed');
-   * }
+     *   console.log('Mixpanel is installed');
+     * }
      */
     isInstalled,
 
@@ -61,7 +61,7 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel already installed');
       }
 
-      properties.client = MixpanelLib.init(token) || MixpanelLib;
+      properties.client = MixpanelLib.init(token, { protocol: 'https' }) || MixpanelLib;
       properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]));
       properties.installed = true;
     },
