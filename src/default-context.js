@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-const arch = require('arch');
-const os = require('os');
-const osLocale = require('os-locale');
+const arch = require('arch')
+const os = require('os')
+const osLocale = require('os-locale')
 
 /**
  * @summary Get host architecture
@@ -36,10 +36,10 @@ const osLocale = require('os-locale');
  */
 const getHostArchitecture = () => {
   if (['ia32', 'x64'].includes(process.arch)) {
-    return arch().replace('x86', 'ia32');
+    return arch().replace('x86', 'ia32')
   }
-  return process.arch;
-};
+  return process.arch
+}
 
 module.exports.node = {
   arch: process.arch,
@@ -51,10 +51,10 @@ module.exports.node = {
   startFreeMemory: os.freemem(),
   hostArch: getHostArchitecture(),
   locale: osLocale.sync()
-};
+}
 
 module.exports.electron = Object.assign({}, module.exports.node, {
   electron: process.versions.electron
-});
+})
 
-module.exports.browser = {};
+module.exports.browser = {}

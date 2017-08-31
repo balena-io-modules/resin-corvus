@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-const detect = require('detect-process');
-const isRunningInAsar = require('electron-is-running-in-asar');
+const detect = require('detect-process')
+const isRunningInAsar = require('electron-is-running-in-asar')
 
-const env = detect.getName();
+const env = detect.getName()
 
 // In Electron, we don't want to log to external services if we're not running in asar
-module.exports = env === 'electron' && !isRunningInAsar();
+module.exports = env === 'electron' && !isRunningInAsar()

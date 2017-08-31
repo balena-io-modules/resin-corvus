@@ -14,71 +14,70 @@
  * limitations under the License.
  */
 
-const chai = require('chai');
-const sinon = require('sinon');
-const SentryLib = require('raven');
-const Sentry = require('../src/sentry');
+const chai = require('chai')
+const sinon = require('sinon')
+const SentryLib = require('raven')
+const Sentry = require('../src/sentry')
 
 describe('Services: Sentry', () => {
-  const sentry = Sentry(SentryLib);
+  const sentry = Sentry(SentryLib)
 
-  const dsn = 'https://xxx:yyy@client.io/100000';
-  const release = '1.0.0';
+  const dsn = 'https://xxx:yyy@client.io/100000'
+  const release = '1.0.0'
 
   beforeEach(() => {
-    sinon.spy(SentryLib, 'config');
-    sinon.spy(SentryLib, 'install');
-    sinon.spy(SentryLib, 'uninstall');
-  });
+    sinon.spy(SentryLib, 'config')
+    sinon.spy(SentryLib, 'install')
+    sinon.spy(SentryLib, 'uninstall')
+  })
 
   afterEach(() => {
     if (sentry.isInstalled()) {
-      sentry.uninstall();
+      sentry.uninstall()
     }
-    SentryLib.config.restore();
-    SentryLib.install.restore();
-    SentryLib.uninstall.restore();
-  });
+    SentryLib.config.restore()
+    SentryLib.install.restore()
+    SentryLib.uninstall.restore()
+  })
 
   describe('install()', () => {
     it('throws if Sentry is already installed', () => {
-      sentry.install(dsn, release);
-      chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error);
-    });
+      sentry.install(dsn, release)
+      chai.expect(() => sentry.install(dsn, '2.0.0')).to.throw(Error)
+    })
 
     it('calls SentryLib.install() after SentryLib.config()', () => {
-      sentry.install(dsn, release);
-      chai.expect(SentryLib.install.calledAfter(SentryLib.config));
-    });
-  });
+      sentry.install(dsn, release)
+      chai.expect(SentryLib.install.calledAfter(SentryLib.config))
+    })
+  })
 
   describe('isInstalled()', () => {
     it('is false when sentry is not installed', () => {
-      chai.expect(sentry.isInstalled()).to.be.false;
-    });
+      chai.expect(sentry.isInstalled()).to.equal(false)
+    })
 
     it('is true when sentry is installed', () => {
-      sentry.install(dsn, release);
-      chai.expect(sentry.isInstalled()).to.be.true;
-    });
+      sentry.install(dsn, release)
+      chai.expect(sentry.isInstalled()).to.equal(true)
+    })
 
     it('is false after uninstall', () => {
-      sentry.install(dsn, release);
-      sentry.uninstall();
-      chai.expect(sentry.isInstalled()).to.be.false;
-    });
-  });
+      sentry.install(dsn, release)
+      sentry.uninstall()
+      chai.expect(sentry.isInstalled()).to.equal(false)
+    })
+  })
 
   describe('uninstall()', () => {
     it('throws if Sentry is not installed', () => {
-      chai.expect(() => sentry.uninstall()).to.throw(Error);
-    });
+      chai.expect(() => sentry.uninstall()).to.throw(Error)
+    })
 
     it('calls SentryLib.uninstall()', () => {
-      sentry.install(dsn, release);
-      sentry.uninstall();
-      chai.expect(SentryLib.uninstall.calledOnce).to.be.true;
-    });
-  });
-});
-
+      sentry.install(dsn, release)
+      sentry.uninstall()
+      chai.expect(SentryLib.uninstall.calledOnce).to.equal(true)
+    })
+  })
+})
