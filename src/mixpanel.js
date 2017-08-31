@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-const detect = require('detect-process');
-const utils = require('./utils');
-const defaultContext = require('./default-context');
-const _ = require('lodash');
+const detect = require('detect-process')
+const utils = require('./utils')
+const defaultContext = require('./default-context')
+const _ = require('lodash')
 
 module.exports = (MixpanelLib) => {
-  const env = detect.getName();
+  const env = detect.getName()
 
   const properties = {
     installed: false
-  };
+  }
 
-  const isInstalled = () => properties.installed;
+  const isInstalled = () => properties.installed
 
   return {
     /**
@@ -58,12 +58,12 @@ module.exports = (MixpanelLib) => {
      */
     install: (token, config) => {
       if (isInstalled()) {
-        throw new Error('Mixpanel already installed');
+        throw new Error('Mixpanel already installed')
       }
 
-      properties.client = MixpanelLib.init(token, { protocol: 'https' }) || MixpanelLib;
-      properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]));
-      properties.installed = true;
+      properties.client = MixpanelLib.init(token, { protocol: 'https' }) || MixpanelLib
+      properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]))
+      properties.installed = true
     },
 
     /**
@@ -76,10 +76,10 @@ module.exports = (MixpanelLib) => {
      */
     uninstall: () => {
       if (!isInstalled()) {
-        throw new Error('Mixpanel not installed');
+        throw new Error('Mixpanel not installed')
       }
 
-      properties.installed = false;
+      properties.installed = false
     },
 
     /**
@@ -92,12 +92,12 @@ module.exports = (MixpanelLib) => {
      */
     track: (message, data) => {
       if (!isInstalled()) {
-        throw new Error('Mixpanel not installed');
+        throw new Error('Mixpanel not installed')
       }
 
-      const context = Object.assign({}, properties.context, utils.flattenStartCase(data));
+      const context = Object.assign({}, properties.context, utils.flattenStartCase(data))
 
-      properties.client.track(message, utils.hideAbsolutePathsInObject(context));
+      properties.client.track(message, utils.hideAbsolutePathsInObject(context))
     }
-  };
-};
+  }
+}

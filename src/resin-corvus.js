@@ -14,42 +14,42 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
-const Mixpanel = require('./mixpanel');
-const Sentry = require('./sentry');
-const utils = require('./utils');
+const _ = require('lodash')
+const Mixpanel = require('./mixpanel')
+const Sentry = require('./sentry')
+const utils = require('./utils')
 
 module.exports = (SentryLib, MixpanelLib, fake = false) => {
-  const sentry = Sentry(SentryLib);
-  const mixpanel = Mixpanel(MixpanelLib);
-  const installedServices = [];
-  let installed = false;
-  let enabled = true;
-  let consoleOutputDisabled = false;
+  const sentry = Sentry(SentryLib)
+  const mixpanel = Mixpanel(MixpanelLib)
+  const installedServices = []
+  let installed = false
+  let enabled = true
+  let consoleOutputDisabled = false
 
-  const getSupportedServices = () => ['sentry', 'mixpanel'];
+  const getSupportedServices = () => ['sentry', 'mixpanel']
 
   const logDebug = (message) => {
-    const debugMessage = `${new Date()} ${message}`;
+    const debugMessage = `${new Date()} ${message}`
 
     if (!consoleOutputDisabled) {
       /* eslint-disable no-console */
-      console.log(utils.hideAbsolutePathsInObject(debugMessage));
+      console.log(utils.hideAbsolutePathsInObject(debugMessage))
       /* eslint-enable no-console */
     }
-  };
+  }
 
-  let shouldReportCallback = _.constant(true);
+  let shouldReportCallback = _.constant(true)
 
   const setShouldReport = (callback) => {
     if (!_.isFunction(callback)) {
-      throw new Error('Function expected');
+      throw new Error('Function expected')
     } else {
-      shouldReportCallback = callback;
+      shouldReportCallback = callback
     }
-  };
+  }
 
-  const shouldSendToExternalServices = () => enabled && !fake && shouldReportCallback();
+  const shouldSendToExternalServices = () => enabled && !fake && shouldReportCallback()
 
   return {
 
@@ -84,7 +84,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * resinCorvus.enable();
      */
     enable: () => {
-      enabled = true;
+      enabled = true
     },
 
     /**
@@ -96,7 +96,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * resinCorvus.disable();
      */
     disable: () => {
-      enabled = false;
+      enabled = false
     },
 
     /**
@@ -143,25 +143,25 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * });
      */
     install: (config) => {
-      consoleOutputDisabled = Boolean(config.options.disableConsoleOutput);
+      consoleOutputDisabled = Boolean(config.options.disableConsoleOutput)
 
       if (fake) {
-        return;
+        return
       }
 
       if (installed) {
-        throw new Error('Already installed');
+        throw new Error('Already installed')
       }
 
-      installed = true;
+      installed = true
 
       if (!_.isNil(config.options.shouldReport)) {
-        setShouldReport(config.options.shouldReport);
+        setShouldReport(config.options.shouldReport)
       }
 
       Object.keys(config.services).forEach((serviceName) => {
         if (!getSupportedServices().includes(serviceName)) {
-          throw new Error(`Service not supported: ${serviceName}`);
+          throw new Error(`Service not supported: ${serviceName}`)
         }
 
         if (serviceName === 'sentry' && !_.isNil(config.services.sentry)) {
@@ -169,19 +169,19 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
             release: config.options.release,
             serverName: config.options.serverName,
             disableConsoleAlerts: consoleOutputDisabled
-          });
-          installedServices.push('sentry');
+          })
+          installedServices.push('sentry')
         }
 
         if (serviceName === 'mixpanel' && !_.isNil(config.services.mixpanel)) {
           mixpanel.install(config.services.mixpanel, {
             version: config.options.release,
             serverName: config.options.serverName
-          });
+          })
 
-          installedServices.push('mixpanel');
+          installedServices.push('mixpanel')
         }
-      });
+      })
     },
 
     /**
@@ -200,16 +200,16 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     logEvent: (message, data) => {
       const debugMessage = _.attempt(() => {
         if (data) {
-          return `${message} (${JSON.stringify(data)})`;
+          return `${message} (${JSON.stringify(data)})`
         }
 
-        return message;
-      });
+        return message
+      })
 
-      logDebug(debugMessage);
+      logDebug(debugMessage)
 
       if (shouldSendToExternalServices() && installedServices.includes('mixpanel')) {
-        mixpanel.track(message, data);
+        mixpanel.track(message, data)
       }
     },
 
@@ -223,15 +223,15 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     logException: (error) => {
       if (!consoleOutputDisabled) {
         /* eslint-disable no-console */
-        console.error(JSON.stringify(utils.hideAbsolutePathsInObject(error)));
+        console.error(JSON.stringify(utils.hideAbsolutePathsInObject(error)))
         /* eslint-disable no-console */
       }
 
       if (!installedServices.includes('sentry') || !shouldSendToExternalServices() || !utils.shouldReportError(error)) {
-        return;
+        return
       }
 
-      sentry.captureException(error);
+      sentry.captureException(error)
     },
 
     /**
@@ -249,7 +249,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      */
     disableConsoleOutput: () => {
-      consoleOutputDisabled = true;
+      consoleOutputDisabled = true
     },
 
     /**
@@ -258,7 +258,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      * @public
      */
     enableConsoleOutput: () => {
-      consoleOutputDisabled = false;
+      consoleOutputDisabled = false
     }
-  };
-};
+  }
+}

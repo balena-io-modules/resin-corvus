@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
-_.mixin(require('lodash-deep'));
-const flatten = require('flat').flatten;
-const deepMapKeys = require('deep-map-keys');
-const path = require('path');
+const _ = require('lodash')
+_.mixin(require('lodash-deep'))
+const flatten = require('flat').flatten
+const deepMapKeys = require('deep-map-keys')
+const path = require('path')
 
 /**
  * @summary Prepare object for Mixpanel
@@ -48,41 +48,41 @@ const path = require('path');
  */
 exports.flattenStartCase = (object) => {
   if (_.isUndefined(object)) {
-    return undefined;
+    return undefined
   }
 
   // Transform primitives to objects
   if (!_.isObject(object)) {
     return {
-      Value: object,
-    };
+      Value: object
+    }
   }
 
   if (_.isArray(object)) {
     return _.map(object, (property) => {
       if (_.isObject(property)) {
-        return exports.flattenStartCase(property);
+        return exports.flattenStartCase(property)
       }
 
-      return property;
-    });
+      return property
+    })
   }
 
   const transformedKeysObject = deepMapKeys(object, (key) => {
     // Preserve environment variables
-    const regex = /^[A-Z_]+$/;
+    const regex = /^[A-Z_]+$/
     if (regex.test(key)) {
-      return key;
+      return key
     }
 
-    return _.startCase(key);
-  });
+    return _.startCase(key)
+  })
 
   return flatten(transformedKeysObject, {
     delimiter: ' ',
-    safe: true,
-  });
-};
+    safe: true
+  })
+}
 
 /**
  * @summary Create an object clone with all absolute paths replaced with the path basename
@@ -116,32 +116,31 @@ exports.flattenStartCase = (object) => {
  */
 exports.hideAbsolutePathsInObject = (object) => {
   if (_.isError(object)) {
-
     // Turn the Error into an Object
     object = _.reduce(Object.getOwnPropertyNames(object), (accumulator, key) => {
-      accumulator[key] = object[key];
-      return accumulator;
-    }, {});
+      accumulator[key] = object[key]
+      return accumulator
+    }, {})
   }
 
   if (_.isString(object)) {
-    const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word));
-    return words.join(' ');
+    const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word))
+    return words.join(' ')
   }
 
   return _.deepMapValues(object, (value) => {
     if (!_.isString(value)) {
-      return value;
+      return value
     }
 
     // Don't alter disk devices, even though they appear as full paths
     if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
-      return value;
+      return value
     }
 
-    return path.isAbsolute(value) ? path.basename(value) : value;
-  });
-};
+    return path.isAbsolute(value) ? path.basename(value) : value
+  })
+}
 
 /**
  * @summary Check whether an error should be reported to TrackJS
@@ -162,4 +161,4 @@ exports.hideAbsolutePathsInObject = (object) => {
  *   console.log('We should report this error');
  * }
  */
-exports.shouldReportError = error => !_.has(error, ['report']) || Boolean(error.report);
+exports.shouldReportError = error => !_.has(error, ['report']) || Boolean(error.report)

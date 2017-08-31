@@ -6,7 +6,8 @@
   "browser": "browser.js",
   "scripts": {
     "test": "mocha --recursive tests",
-    "lint": "eslint ."
+    "lint": "standard ./*.js src/*.js && standard --env mocha tests/*.js",
+    "lint-fix": "standard --fix"
   },
   "repository": {
     "type": "git",
@@ -40,9 +41,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "mocha": "^3.3.0",
-    "eslint": "^3.17.1",
-    "eslint-config-airbnb-base": "^11.1.1",
-    "eslint-plugin-import": "^2.2.0",
-    "sinon": "^2.0.0"
+    "sinon": "^2.0.0",
+    "standard": "^10.0.3"
   }
 }

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-const _ = require('lodash');
-const detect = require('detect-process');
-const defaultContext = require('./default-context');
-const utils = require('./utils');
+const _ = require('lodash')
+const detect = require('detect-process')
+const defaultContext = require('./default-context')
+const utils = require('./utils')
 
-const env = detect.getName();
+const env = detect.getName()
 
 module.exports = (SentryLib) => {
   const properties = {
     installed: false,
     enabled: true
-  };
+  }
 
   return {
 
@@ -60,22 +60,22 @@ module.exports = (SentryLib) => {
      */
     install: (dsn, config) => {
       if (properties.installed) {
-        throw new Error('Sentry already installed');
+        throw new Error('Sentry already installed')
       }
 
-      const sentryConfig = _.cloneDeep(config);
+      const sentryConfig = _.cloneDeep(config)
 
       _.defaults(sentryConfig, {
         autoBreadcrumbs: true,
         allowSecretKey: true,
         dataCallback: utils.hideAbsolutePathsInObject,
         transport: SentryLib.transports.https
-      });
+      })
 
-      sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env]);
+      sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env])
 
-      properties.client = SentryLib.config(dsn, sentryConfig).install();
-      properties.installed = true;
+      properties.client = SentryLib.config(dsn, sentryConfig).install()
+      properties.installed = true
     },
 
     /**
@@ -88,11 +88,11 @@ module.exports = (SentryLib) => {
      */
     uninstall: () => {
       if (!properties.installed) {
-        throw new Error('Sentry not installed');
+        throw new Error('Sentry not installed')
       }
 
-      properties.client.uninstall();
-      properties.installed = false;
+      properties.client.uninstall()
+      properties.installed = false
     },
 
     /**
@@ -105,17 +105,17 @@ module.exports = (SentryLib) => {
      */
     captureException: (exception) => {
       if (!properties.installed) {
-        throw new Error('Sentry not installed');
+        throw new Error('Sentry not installed')
       }
 
-      let transformedException = exception;
+      let transformedException = exception
       if (!_.isError(exception) && !_.isString(exception)) {
-        transformedException = JSON.stringify(exception);
+        transformedException = JSON.stringify(exception)
       }
 
       properties.client.captureException(transformedException, {
         stacktrace: false
-      });
+      })
     }
-  };
-};
+  }
+}

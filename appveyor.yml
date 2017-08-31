@@ -1,5 +1,8 @@
 environment:
-  nodejs_version: "6"
+  nodejs_version:
+    - "8"
+    - "6"
+    - "4"
 
 install:
   - ps: Install-Product node $env:nodejs_version
@@ -8,6 +11,7 @@ install:
 test_script:
   - node --version
   - npm --version
+  - npm run lint
   - npm test
 
 build: off

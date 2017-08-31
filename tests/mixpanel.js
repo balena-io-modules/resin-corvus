@@ -14,59 +14,59 @@
  * limitations under the License.
  */
 
-const chai = require('chai');
-const sinon = require('sinon');
-const MixpanelLib = require('mixpanel');
-const Mixpanel = require('../src/mixpanel');
+const chai = require('chai')
+const sinon = require('sinon')
+const MixpanelLib = require('mixpanel')
+const Mixpanel = require('../src/mixpanel')
 
 describe('Services: Mixpanel', () => {
-  const mixpanel = Mixpanel(MixpanelLib);
-  const token = 'YOUR_TOKEN';
+  const mixpanel = Mixpanel(MixpanelLib)
+  const token = 'YOUR_TOKEN'
 
   beforeEach(() => {
-    sinon.spy(MixpanelLib, 'init');
-  });
+    sinon.spy(MixpanelLib, 'init')
+  })
 
   afterEach(() => {
     if (mixpanel.isInstalled()) {
-      mixpanel.uninstall();
+      mixpanel.uninstall()
     }
-    MixpanelLib.init.restore();
-  });
+    MixpanelLib.init.restore()
+  })
 
   describe('install()', () => {
     it('throws if mixpanel is already installed', () => {
-      mixpanel.install(token);
-      chai.expect(() => mixpanel.install(token)).to.throw(Error);
-    });
+      mixpanel.install(token)
+      chai.expect(() => mixpanel.install(token)).to.throw(Error)
+    })
 
     it('calls MixpanelLib.init() with correct parameters', () => {
-      mixpanel.install(token);
-      chai.expect(MixpanelLib.init.calledOnce).to.be.true;
-      chai.expect(MixpanelLib.init.calledWith(token)).to.be.true;
-    });
-  });
+      mixpanel.install(token)
+      chai.expect(MixpanelLib.init.calledOnce).to.equal(true)
+      chai.expect(MixpanelLib.init.calledWith(token)).to.equal(true)
+    })
+  })
 
   describe('isInstalled()', () => {
     it('is false when mixpanel is not installed', () => {
-      chai.expect(mixpanel.isInstalled()).to.be.false;
-    });
+      chai.expect(mixpanel.isInstalled()).to.equal(false)
+    })
 
     it('is true when mixpanel is installed', () => {
-      mixpanel.install(token);
-      chai.expect(mixpanel.isInstalled()).to.be.true;
-    });
+      mixpanel.install(token)
+      chai.expect(mixpanel.isInstalled()).to.equal(true)
+    })
 
     it('is false after uninstall', () => {
-      mixpanel.install(token);
-      mixpanel.uninstall();
-      chai.expect(mixpanel.isInstalled()).to.be.false;
-    });
-  });
+      mixpanel.install(token)
+      mixpanel.uninstall()
+      chai.expect(mixpanel.isInstalled()).to.equal(false)
+    })
+  })
 
   describe('uninstall()', () => {
     it('throws if mixpanel is not installed', () => {
-      chai.expect(() => mixpanel.uninstall()).to.throw(Error);
-    });
-  });
-});
+      chai.expect(() => mixpanel.uninstall()).to.throw(Error)
+    })
+  })
+})
