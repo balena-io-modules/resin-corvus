@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict'
+
 const _ = require('lodash')
 _.mixin(require('lodash-deep'))
 const flatten = require('flat').flatten

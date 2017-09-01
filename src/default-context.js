@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict'
+
 const arch = require('arch')
 const os = require('os')
 const osLocale = require('os-locale')
@@ -35,7 +37,7 @@ const osLocale = require('os-locale')
  * }
  */
 const getHostArchitecture = () => {
-  if (['ia32', 'x64'].includes(process.arch)) {
+  if (/ia32|x64/.test(process.arch)) {
     return arch().replace('x86', 'ia32')
   }
   return process.arch
