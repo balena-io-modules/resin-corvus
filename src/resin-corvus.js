@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict'
+
 const _ = require('lodash')
 const Mixpanel = require('./mixpanel')
 const Sentry = require('./sentry')

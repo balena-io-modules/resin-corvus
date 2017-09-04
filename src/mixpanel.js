@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict'
+
 const detect = require('detect-process')
 const utils = require('./utils')
 const defaultContext = require('./default-context')

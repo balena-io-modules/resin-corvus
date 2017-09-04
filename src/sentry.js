@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use strict'
+
 const _ = require('lodash')
 const detect = require('detect-process')
 const defaultContext = require('./default-context')
@@ -72,7 +74,7 @@ module.exports = (SentryLib) => {
         transport: SentryLib.transports.https
       })
 
-      sentryConfig.extra = _.defaults(sentryConfig.extra, defaultContext[env])
+      _.defaults(sentryConfig.extra, defaultContext[env])
 
       properties.client = SentryLib.config(dsn, sentryConfig).install()
       properties.installed = true
