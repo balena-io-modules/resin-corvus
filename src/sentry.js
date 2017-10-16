@@ -66,12 +66,13 @@ module.exports = (SentryLib) => {
       }
 
       const sentryConfig = _.cloneDeep(config)
+      const transport = SentryLib.transports && SentryLib.transports.https
 
       _.defaults(sentryConfig, {
         autoBreadcrumbs: true,
         allowSecretKey: true,
         dataCallback: utils.hideAbsolutePathsInObject,
-        transport: SentryLib.transports.https
+        transport: transport
       })
 
       _.defaults(sentryConfig.extra, defaultContext[env])
