@@ -29,19 +29,19 @@
     "deep-map-keys": "^1.2.0",
     "detect-process": "^1.0.4",
     "electron-is-running-in-asar": "^1.0.0",
-    "flat": "^2.0.1",
+    "flat": "^4.0.0",
     "lodash": "^4.17.4",
     "lodash-deep": "^2.0.0",
-    "mixpanel": "^0.6.0",
+    "mixpanel": "^0.7.0",
     "mixpanel-browser": "^2.11.0",
     "os-locale": "^2.0.0",
-    "raven": "^1.1.4",
-    "raven-js": "^3.12.1"
+    "raven": "^2.2.1",
+    "raven-js": "^3.19.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^3.3.0",
-    "sinon": "^2.0.0",
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1",
+    "sinon": "^4.0.1",
     "standard": "^10.0.3"
   }
 }
