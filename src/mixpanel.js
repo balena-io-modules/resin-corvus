@@ -63,6 +63,16 @@ module.exports = (MixpanelLib) => {
         throw new Error('Mixpanel already installed')
       }
 
+      // This is a hack to prevent Mixpanel from sending a strange `/decide/` HTTP request.
+      // We don't know what `/decide/` is for, but by taking a look at the `mixpanel` browser
+      // library, we determined that we can prevent that call with the following incantation:
+      if (global.window) {
+        global.window['_mpEditorLoaded'] = true
+        global.window.sessionStorage.setItem('editorParams', JSON.stringify({
+          projectToken: token
+        }))
+      }
+
       properties.client = MixpanelLib.init(token, { protocol: 'https' }) || MixpanelLib
       properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]))
       properties.installed = true
