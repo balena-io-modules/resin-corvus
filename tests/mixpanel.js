@@ -41,12 +41,6 @@ describe('Services: Mixpanel', () => {
       mixpanel.install(token)
       chai.expect(() => mixpanel.install(token)).to.throw(Error)
     })
-
-    it('calls MixpanelLib.init() with correct parameters', () => {
-      mixpanel.install(token)
-      chai.expect(MixpanelLib.init.calledOnce).to.equal(true)
-      chai.expect(MixpanelLib.init.calledWith(token)).to.equal(true)
-    })
   })
 
   describe('isInstalled()', () => {

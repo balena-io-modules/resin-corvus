@@ -25,7 +25,8 @@ module.exports = (MixpanelLib) => {
   const env = detect.getName()
 
   const properties = {
-    installed: false
+    installed: false,
+    projectToken: null
   }
 
   const isInstalled = () => properties.installed
@@ -73,7 +74,7 @@ module.exports = (MixpanelLib) => {
         }))
       }
 
-      properties.client = MixpanelLib.init(token, { protocol: 'https' }) || MixpanelLib
+      properties.projectToken = token
       properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]))
       properties.installed = true
     },
@@ -108,6 +109,12 @@ module.exports = (MixpanelLib) => {
       }
 
       const context = Object.assign({}, properties.context, utils.flattenStartCase(data))
+
+      if (!properties.client) {
+        properties.client = MixpanelLib.init(properties.projectToken, {
+          protocol: 'https'
+        }) || MixpanelLib
+      }
 
       properties.client.track(message, utils.hideAbsolutePathsInObject(context))
     }
