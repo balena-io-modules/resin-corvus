@@ -75,7 +75,9 @@ module.exports = (SentryLib) => {
         transport: transport
       })
 
-      _.defaults(sentryConfig.extra, defaultContext[env])
+      _.merge(sentryConfig, {
+        extra: defaultContext[env]
+      })
 
       properties.client = SentryLib.config(dsn, sentryConfig).install()
       properties.installed = true
