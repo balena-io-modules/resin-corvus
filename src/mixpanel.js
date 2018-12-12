@@ -59,7 +59,7 @@ module.exports = (MixpanelLib) => {
      *   version: '1.0.0'
      * });
      */
-    install: (token, config) => {
+    install: (token, context, config) => {
       if (isInstalled()) {
         throw new Error('Mixpanel already installed')
       }
@@ -75,8 +75,9 @@ module.exports = (MixpanelLib) => {
       }
 
       properties.projectToken = token
-      properties.context = utils.flattenStartCase(_.defaults(config, defaultContext[env]))
+      properties.context = utils.flattenStartCase(_.defaults(context, defaultContext[env]))
       properties.installed = true
+      properties.config = config
     },
 
     /**
@@ -111,9 +112,7 @@ module.exports = (MixpanelLib) => {
       const context = Object.assign({}, properties.context, utils.flattenStartCase(data))
 
       if (!properties.client) {
-        properties.client = MixpanelLib.init(properties.projectToken, {
-          protocol: 'https'
-        }) || MixpanelLib
+        properties.client = MixpanelLib.init(properties.projectToken, properties.config) || MixpanelLib
       }
 
       properties.client.track(message, utils.hideAbsolutePathsInObject(context))
