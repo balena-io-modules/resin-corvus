@@ -179,7 +179,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           mixpanel.install(config.services.mixpanel, {
             version: config.options.release,
             serverName: config.options.serverName
-          })
+          }, config.options.mixpanel)
 
           installedServices.push('mixpanel')
         }
