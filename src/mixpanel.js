@@ -26,10 +26,17 @@ module.exports = (MixpanelLib) => {
 
   const properties = {
     installed: false,
-    projectToken: null
+    projectToken: null,
+    queue: []
   }
 
   const isInstalled = () => properties.installed
+
+  const disposeEventsQueue = (events, client) => {
+    const { event, data } = _.head(events)
+    client.track(event, data)
+    return !_.isEmpty(_.tail(events)) && disposeEventsQueue(_.tail(events), client)
+  }
 
   return {
     /**
@@ -59,7 +66,7 @@ module.exports = (MixpanelLib) => {
      *   version: '1.0.0'
      * });
      */
-    install: (token, context, config) => {
+    install: (token, context, deferred = false) => {
       if (isInstalled()) {
         throw new Error('Mixpanel already installed')
       }
@@ -77,7 +84,7 @@ module.exports = (MixpanelLib) => {
       properties.projectToken = token
       properties.context = utils.flattenStartCase(_.defaults(context, defaultContext[env]))
       properties.installed = true
-      properties.config = config
+      properties.deferred = deferred
     },
 
     /**
@@ -111,11 +118,28 @@ module.exports = (MixpanelLib) => {
 
       const context = Object.assign({}, properties.context, utils.flattenStartCase(data))
 
-      if (!properties.client) {
-        properties.client = MixpanelLib.init(properties.projectToken, properties.config) || MixpanelLib
+      if (properties.client) {
+        return properties.client.track(message, utils.hideAbsolutePathsInObject(context))
       }
 
-      properties.client.track(message, utils.hideAbsolutePathsInObject(context))
+      if (!properties.deferred || properties.config) {
+        properties.client = MixpanelLib.init(properties.projectToken, properties.config) || MixpanelLib
+
+        // Dispatch events if there are any stored
+        if (!_.isEmpty(properties.queue)) {
+          disposeEventsQueue(properties.queue, properties.client)
+        }
+      } else {
+        // Store the event until configs and client are loaded
+        properties.queue.push({
+          event: message,
+          data: utils.hideAbsolutePathsInObject(context)
+        })
+      }
+    },
+
+    setConfig: (config) => {
+      properties.config = config
     }
   }
 }

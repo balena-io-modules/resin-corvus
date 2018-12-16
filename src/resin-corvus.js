@@ -51,7 +51,8 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
     }
   }
 
-  const shouldSendToExternalServices = () => enabled && !fake && shouldReportCallback()
+  // const shouldSendToExternalServices = () => enabled && !fake && shouldReportCallback()
+  const shouldSendToExternalServices = () => shouldReportCallback()
 
   return {
 
@@ -179,7 +180,7 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
           mixpanel.install(config.services.mixpanel, {
             version: config.options.release,
             serverName: config.options.serverName
-          }, config.options.mixpanel)
+          }, config.options.mixpanelDeferred)
 
           installedServices.push('mixpanel')
         }
@@ -261,6 +262,19 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      */
     enableConsoleOutput: () => {
       consoleOutputDisabled = false
+    },
+
+    /**
+     * @summary Set analytics configs
+     * @function
+     * @public
+     */
+    setConfigs: (configs) => {
+      const { mixpanelConfig } = configs
+
+      if (mixpanelConfig) {
+        mixpanel.setConfig(mixpanelConfig)
+      }
     }
   }
 }
