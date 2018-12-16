@@ -23,13 +23,35 @@ const _ = require('lodash')
 
 module.exports = (MixpanelLib) => {
   const env = detect.getName()
+  const queue = []
 
-  const properties = {
-    installed: false,
-    projectToken: null
+  let installed = false
+  let projectToken = null
+  let client = null
+  let mixpanelContext = {}
+  let disabled = false
+
+  function disposeEventsQueue () {
+    if (client === null) {
+      return
+    }
+
+    let element = queue.shift()
+    while (element !== undefined) {
+      const { event, data } = element
+      client.track(event, data)
+      element = queue.shift()
+    }
   }
 
-  const isInstalled = () => properties.installed
+  function setConfig (config) {
+    if (config == null) {
+      disabled = true
+      queue.splice(0, queue.length)
+    } else {
+      client = MixpanelLib.init(projectToken, config) || MixpanelLib
+    }
+  }
 
   return {
     /**
@@ -44,7 +66,9 @@ module.exports = (MixpanelLib) => {
      *   console.log('Mixpanel is installed');
      * }
      */
-    isInstalled,
+    isInstalled: () => {
+      return installed
+    },
 
     /**
      * @summary Install Mixpanel client
@@ -59,8 +83,8 @@ module.exports = (MixpanelLib) => {
      *   version: '1.0.0'
      * });
      */
-    install: (token, context, config) => {
-      if (isInstalled()) {
+    install: (token, context, config, deferred = false) => {
+      if (installed) {
         throw new Error('Mixpanel already installed')
       }
 
@@ -74,10 +98,13 @@ module.exports = (MixpanelLib) => {
         }))
       }
 
-      properties.projectToken = token
-      properties.context = utils.flattenStartCase(_.defaults(context, defaultContext[env]))
-      properties.installed = true
-      properties.config = config
+      projectToken = token
+      mixpanelContext = utils.flattenStartCase(_.defaults(context, defaultContext[env]))
+      installed = true
+      // deferred means that setConfig will be called later
+      if (!deferred) {
+        setConfig(config)
+      }
     },
 
     /**
@@ -89,11 +116,11 @@ module.exports = (MixpanelLib) => {
      * sentry.uninstall()
      */
     uninstall: () => {
-      if (!isInstalled()) {
+      if (!installed) {
         throw new Error('Mixpanel not installed')
       }
 
-      properties.installed = false
+      installed = false
     },
 
     /**
@@ -105,17 +132,24 @@ module.exports = (MixpanelLib) => {
      * @param {Object} data
      */
     track: (message, data) => {
-      if (!isInstalled()) {
+      if (!installed) {
         throw new Error('Mixpanel not installed')
       }
 
-      const context = Object.assign({}, properties.context, utils.flattenStartCase(data))
-
-      if (!properties.client) {
-        properties.client = MixpanelLib.init(properties.projectToken, properties.config) || MixpanelLib
+      if (disabled) {
+        return
       }
 
-      properties.client.track(message, utils.hideAbsolutePathsInObject(context))
-    }
+      // Store the event until configs are loaded
+      queue.push({
+        event: message,
+        data: utils.hideAbsolutePathsInObject(Object.assign({}, mixpanelContext, utils.flattenStartCase(data)))
+      })
+
+      // Dispatch events if there are any stored
+      disposeEventsQueue()
+    },
+
+    setConfig
   }
 }
