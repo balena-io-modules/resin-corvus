@@ -176,10 +176,15 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
         }
 
         if (serviceName === 'mixpanel' && !_.isNil(config.services.mixpanel)) {
-          mixpanel.install(config.services.mixpanel, {
-            version: config.options.release,
-            serverName: config.options.serverName
-          }, config.options.mixpanel)
+          mixpanel.install(
+            config.services.mixpanel,
+            {
+              version: config.options.release,
+              serverName: config.options.serverName
+            },
+            config.options.mixpanel,
+            config.options.mixpanelDeferred
+          )
 
           installedServices.push('mixpanel')
         }
@@ -261,6 +266,15 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
      */
     enableConsoleOutput: () => {
       consoleOutputDisabled = false
+    },
+
+    /**
+     * @summary Set analytics configs
+     * @function
+     * @public
+     */
+    setConfigs: (configs) => {
+      mixpanel.setConfig(configs.mixpanel)
     }
   }
 }
