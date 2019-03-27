@@ -112,15 +112,7 @@ module.exports = (SentryLib) => {
       if (!properties.installed) {
         throw new Error('Sentry not installed')
       }
-
-      let transformedException = exception
-      if (!_.isError(exception) && !_.isString(exception)) {
-        transformedException = JSON.stringify(exception)
-      }
-
-      properties.client.captureException(transformedException, {
-        stacktrace: false
-      })
+      properties.client.captureException(exception)
     }
   }
 }
