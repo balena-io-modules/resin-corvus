@@ -16,6 +16,7 @@
 
 'use strict'
 
+const jc = require('json-cycle')
 const _ = require('lodash')
 _.mixin(require('lodash-deep'))
 const flatten = require('flat').flatten
@@ -129,6 +130,9 @@ exports.hideAbsolutePathsInObject = (object) => {
     const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word))
     return words.join(' ')
   }
+
+  // Avoid "Maximum call stack size exceeded" errors
+  object = jc.decycle(object)
 
   return _.deepMapValues(object, (value) => {
     if (!_.isString(value)) {

@@ -132,6 +132,12 @@ describe('Utils', () => {
       chai.expect(utils.hideAbsolutePathsInObject(null)).to.equal(null)
     })
 
+    it('should remove circular references', () => {
+      const obj = {}
+      obj.circular = obj
+      chai.expect(utils.hideAbsolutePathsInObject(obj)).to.deep.equal({ circular: { $ref: '$' } })
+    })
+
     it('should return a clone of the object if there are no paths in the object', () => {
       const object = {
         numberProperty: 1,
