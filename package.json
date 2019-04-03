@@ -30,6 +30,7 @@
     "detect-process": "^1.0.4",
     "electron-is-running-in-asar": "^1.0.0",
     "flat": "^4.0.0",
+    "json-cycle": "^1.3.0",
     "lodash": "^4.17.4",
     "lodash-deep": "^2.0.0",
     "mixpanel": "^0.10.1",
