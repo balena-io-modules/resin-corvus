@@ -16,6 +16,5 @@
 
 const SentryLib = require('raven-js/dist/raven')
 const MixpanelLib = require('mixpanel-browser')
-const fake = require('./should-fake')
 
-module.exports = require('./src/resin-corvus')(SentryLib, MixpanelLib, fake)
+module.exports = require('./src/resin-corvus')(SentryLib, MixpanelLib)
