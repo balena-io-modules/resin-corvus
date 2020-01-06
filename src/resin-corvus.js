@@ -167,11 +167,15 @@ module.exports = (SentryLib, MixpanelLib, fake = false) => {
         }
 
         if (serviceName === 'sentry' && !_.isNil(config.services.sentry)) {
-          sentry.install(config.services.sentry, {
+          const sentryConfig = {
             release: config.options.release,
             serverName: config.options.serverName,
             disableConsoleAlerts: consoleOutputDisabled
-          })
+          }
+          if (_.isObject(config.options.sentryConfig)) {
+            _.merge(sentryConfig, config.options.sentryConfig)
+          }
+          sentry.install(config.services.sentry, sentryConfig)
           installedServices.push('sentry')
         }
 

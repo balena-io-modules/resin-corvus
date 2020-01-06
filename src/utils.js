@@ -127,25 +127,63 @@ exports.hideAbsolutePathsInObject = (object) => {
   }
 
   if (_.isString(object)) {
-    const words = object.split(' ').map(word => (path.isAbsolute(word) ? path.basename(word) : word))
-    return words.join(' ')
+    const words = object.split(' ')
+    .map(word => (path.isAbsolute(word) ? path.basename(word) : word))
+    .join(' ')
+    const anonymizedWords = exports.anonymizePaths(words)
+    return anonymizedWords
   }
 
   // Avoid "Maximum call stack size exceeded" errors
   object = jc.decycle(object)
 
-  return _.deepMapValues(object, (value) => {
-    if (!_.isString(value)) {
-      return value
+  return _.deepMapValues(object, exports.anonymizePaths)
+}
+
+/**
+ * @summary Anonymize paths in logs
+ * @function
+ * @public
+ *
+ * @param {String|Object} value - value to anonymize
+ * @returns {String|Object} transformed value
+ */
+exports.anonymizePaths = (value) => {
+  if (!_.isString(value)) {
+    return value
+  }
+  // Don't alter disk devices, even though they appear as full paths
+  if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
+    return value
+  }
+
+  const lines = value.split('\n')
+  const anonymizedValue = lines.map((line) => {
+    // Check for the file:// protocol
+    const fileRegex = /file:\/\//i
+    if (fileRegex.test(line).valueOf()) {
+      return `${_.first(line.split('file://'))}${_.last(line.split('/'))}`
     }
 
-    // Don't alter disk devices, even though they appear as full paths
-    if (value.startsWith('/dev/') || value.startsWith('\\\\.\\')) {
-      return value
+    // Check for general error logs rules
+    const hasPathRegex = /\s+?(at\s[\w\W]+)((\/[\w\W]+\/)|\()/i
+    let sanitized = line
+
+    if (hasPathRegex.test(line).valueOf()) {
+      const fnNameRegex = /at\s((([\w\W]+))\s(\(|\/)|\/)?((\/[\w\W]+\/(node_modules?))|\s\()/i
+      const regexGroups = fnNameRegex.exec(line)
+      let replaceGroups = 'at $3'
+      if (!_.isNull(regexGroups)) {
+        replaceGroups = `at $3 ./${regexGroups[7]}`
+      }
+      sanitized = sanitized.replace(fnNameRegex, replaceGroups)
+      return sanitized.replace(/(\(|\))/g, '')
     }
 
-    return path.isAbsolute(value) ? path.basename(value) : value
-  })
+    return line
+  }).join('\n')
+
+  return anonymizedValue
 }
 
 /**
