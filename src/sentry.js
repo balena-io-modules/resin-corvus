@@ -69,7 +69,7 @@ module.exports = (SentryLib) => {
       const transport = SentryLib.transports && SentryLib.transports.https
 
       _.defaults(sentryConfig, {
-        autoBreadcrumbs: true,
+        autoBreadcrumbs: false,
         allowSecretKey: true,
         dataCallback: utils.hideAbsolutePathsInObject,
         transport: transport
